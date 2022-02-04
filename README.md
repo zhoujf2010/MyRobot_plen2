@@ -8,3 +8,7 @@ ng new MotionEditor
 
 运行：yarn start
 
+yarn add @types/angular
+
+yarn add @types/jquery
+

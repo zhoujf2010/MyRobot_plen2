@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="./assets/js/jquery-1.12.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        p {
+            color: #000;
+            text-align: center;
+        }
+    </style>
+    <style>
+        #helmContainer {
+
+            position: relative;
+            width: 400px;
+            height: 50px;
+            margin: 50px auto;
+            margin-bottom: 50px;
+        }
+
+        #helm {
+            width: 400px;
+            height: 400px;
+        }
+
+        #helm-inner {
+            position: absolute;
+            left: 110px;
+            top: 110px;
+            width: 180px;
+            height: 180px;
+        }
+    </style>
+    <title>舵机控制</title>
+</head>
+
+<body>
+    <div>
+        <div>
+            <img src="./assets/img/robot.png" style="width:200px;height:300px"></img>
+           端口：<input id="channel"></input>
+            <p id="info"></p>
+        </div>
+        <div id="helmContainer">
+            <input type="range" id="angle" min="-800" max="800" id="hpro" style="width:400px" />
+        </div>
+        <div style="margin-left: 250px;height: 40px;">
+            <input type="button" value="+" style="width:50px;height:30px" onclick="add(1)"></input>
+            <input type="button" value="-" style="width:50px;height:30px" onclick="add(-1)"></input>
+        </div>
+        <div style="margin-left: 250px;height: 40px;">
+            <input type="button" value="++" style="width:50px;height:30px" onclick="add(10)"></input>
+            <input type="button" value="--" style="width:50px;height:30px" onclick="add(-10)"></input>
+        </div>
+        <div style="margin-left: 250px;">
+            <input type="button" value="归位" style="width:50px;height:30px" onclick="load()"></input>
+            <input type="button" value="正中" style="width:50px;height:30px" onclick="load0()"></input>
+            <input type="button" value="保存" style="width:50px;height:30px" onclick="save()"></input>
+        </div>
+        <div style="margin-left: 250px;">
+            <a href="./index" target="_blank">编辑器</a>
+        </div>
+        <div style="margin-left: 250px;">
+            文件名<input id="filename"></input>
+            <input type="button" value="执行" style="width:50px;height:30px" onclick="Run()"></input>
+            <input type="button" value="立正" style="width:50px;height:30px" onclick="Stand()"></input>
+        </div>
+    </div>
+    <script>
+
+        function init() {
+            //绑定事件
+            $('#angle').on('mouseup', function (e) {
+                var v = $('#angle').val();
+                showInfo(v);
+            });
+        }
+        init();
+
+        function showInfo(angle) {
+            $("#helm").css("transform", "rotate(" + angle + "deg)");
+            txt = Number(angle.toString());
+            $("#info").text("旋转角度：" + (txt));
+            var channel = $("#channel").val();
+            if (websocket != null)
+                websocket.send(JSON.stringify({ "action":"set","angle": angle, "channel": channel }));
+        }
+
+        function add(dlet) {
+            var angle = $('#angle').val();
+            angle = Number(angle.toString());
+            angle = angle + dlet;
+
+            $('#angle').val(angle);
+            showInfo(angle);
+        }
+
+        function save(){
+            var angle = $('#angle').val();
+            var channel = $("#channel").val();
+            if (websocket != null)
+                websocket.send(JSON.stringify({ "action":"save","angle": angle, "channel": channel }));
+        }
+
+        function load(){
+            var angle = $('#angle').val();
+            var channel = $("#channel").val();
+            if (websocket != null)
+                websocket.send(JSON.stringify({ "action":"load","angle": angle, "channel": channel }));
+        }
+
+        function load0(){
+            $('#angle').val(0);
+            showInfo($('#angle').val());
+        }
+
+        function Run(){
+
+        }
+
+        function Stand(){
+            
+        }
+
+    </script>
+
+    <script>
+
+        var websocket = null;
+        //判断当前浏览器是否支持WebSocket
+        if ('WebSocket' in window) {
+            var url = "ws://" + window.location.host + "/api/websocket";
+            websocket = new WebSocket(url);
+        }
+        else {
+            alert('当前浏览器 Not support websocket')
+            websocket = null;
+        }
+
+        //连接发生错误的回调方法
+        websocket.onerror = function () {
+            alert("WebSocket连接发生错误");
+        };
+
+        //连接成功建立的回调方法
+        websocket.onopen = function () {
+            $("p").text("0");
+        }
+
+        //接收到消息的回调方法
+        websocket.onmessage = function (event) {
+            var data = JSON.parse(event.data);
+            var action = data["action"];
+            if (action =="load"){
+             
+                $('#angle').val(data["angle"]);
+                showInfo( $('#angle').val());
+            }
+
+        }
+
+        //连接关闭的回调方法
+        websocket.onclose = function () {
+        }
+
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function () {
+            closeWebSocket();
+        }
+
+        //关闭WebSocket连接
+        function closeWebSocket() {
+            websocket.close();
+        }
+    </script>
+</body>
+
+</html>
