@@ -1,7 +1,15 @@
 ﻿/// <reference path="./ImageStoreService.ts" />
-/// <reference path="../../business_logic/FrameModel.ts" />
+/// <reference path="../business_logic/FrameModel.ts" />
 
-class FrameFactory
+import {ImageStoreService} from "../services/ImageStoreService";
+import {FrameModel} from "../business_logic/FrameModel";
+
+import { Injectable } from '@angular/core';
+
+@Injectable({
+    providedIn: 'root',
+})
+export class FrameFactory
 {
     static $inject = [
         "ImageStoreService"
@@ -25,4 +33,4 @@ class FrameFactory
     }
 }
 
-angular.module(APP_NAME).service("FrameFactory", FrameFactory); 
+// angular.module(APP_NAME).service("FrameFactory", FrameFactory); 

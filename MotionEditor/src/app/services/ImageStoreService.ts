@@ -1,4 +1,12 @@
-﻿class ImageStoreService
+﻿
+import { Injectable } from '@angular/core';
+
+
+
+@Injectable({
+    providedIn: 'root',
+})
+export class ImageStoreService
 {
     private _image_canvas;
     private _context;
@@ -42,4 +50,4 @@
     }
 }
 
-angular.module(APP_NAME).service("ImageStoreService", ImageStoreService);
+// angular.module(APP_NAME).service("ImageStoreService", ImageStoreService);

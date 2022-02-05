@@ -1,6 +1,9 @@
 ﻿/// <reference path="./OutputDeviceModel.ts" />
 
-class FrameModel
+
+import * as _ from 'lodash'; 
+
+export class FrameModel
 {
     _transition_time_ms: number;
     outputs: Array<OutputDeviceModel>;
@@ -14,7 +17,7 @@ class FrameModel
         image_uri: string
     )
     {
-        this.transition_time_ms = transition_time_ms;
+        this._transition_time_ms = transition_time_ms;
         this.outputs = outputs;
         this.selected = selected;
         this.image_uri = image_uri;
@@ -38,8 +41,10 @@ class FrameModel
         return this._transition_time_ms;
     }
 
-    deepCopy(frame: FrameModel): void
+    deepCopy(frame: FrameModel|undefined): void
     {
+        if (frame == undefined)
+            return;
         this.transition_time_ms = frame.transition_time_ms;
         this.selected = frame.selected;
         this.image_uri = frame.image_uri;

@@ -1,4 +1,12 @@
-﻿class ModelLoader
+﻿import { Injectable } from '@angular/core';
+import * as THREE from 'three';
+import * as _ from 'lodash'; 
+
+
+@Injectable({
+    providedIn: 'root',
+})
+export class ModelLoader
 {
     home_quaternions: Array<THREE.Quaternion> = [];
     rotation_axes: Array<THREE.Object3D> = [];
@@ -7,11 +15,12 @@
     scene: THREE.Scene;
 
     constructor(
-        public $rootScope: ng.IRootScopeService,
-        public $http: ng.IHttpService
+        // public $rootScope: ng.IRootScopeService,
+        // public $http: ng.IHttpService
     )
     {
         // noop.
+        this.scene = new THREE.Scene();
     }
 
     addRotationAxis(object: THREE.Object3D): void
@@ -76,31 +85,31 @@
 
     loadJSON(): void
     {
-        this.$http.get("./assets/etc/plen2_3dmodel.min.json")
-            .success((data) =>
-            {
-                var model_obj:any = data;
+        // this.$http.get("./assets/etc/plen2_3dmodel.min.json")
+        //     .success((data) =>
+        //     {
+        //         var model_obj:any = data;
 
-                if (model_obj.metadata.type.toLowerCase() === "object")
-                {
-                    var loader = new THREE.ObjectLoader();
-                    var result = loader.parse(model_obj);
+        //         if (model_obj.metadata.type.toLowerCase() === "object")
+        //         {
+        //             var loader = new THREE.ObjectLoader();
+        //             var result = loader.parse(model_obj);
 
-                    if (result instanceof THREE.Scene)
-                    {
-                        this.setScene(result);
-                    }
-                    else
-                    {
-                        this.addObject(result);
-                    }
+        //             if (result instanceof THREE.Scene)
+        //             {
+        //                 this.setScene(result);
+        //             }
+        //             else
+        //             {
+        //                 this.addObject(result);
+        //             }
 
-                    this.$rootScope.$broadcast("3DModelLoaded");
-                }
-            })
-            .error(() =>
-            {
-                alert("Loading a 3D model failed. (Please refresh this page.)");
-            });
+        //             this.$rootScope.$broadcast("3DModelLoaded");
+        //         }
+        //     })
+        //     .error(() =>
+        //     {
+        //         alert("Loading a 3D model failed. (Please refresh this page.)");
+        //     });
     }
 } 

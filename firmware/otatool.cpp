@@ -37,7 +37,7 @@ void initOTA(int _LED) {
     else if (error == OTA_RECEIVE_ERROR) Serial.println(". . . . . . . . . . . . . . . Receive Failed");
     else if (error == OTA_END_ERROR) Serial.println(". . . . . . . . . . . . . . . End Failed");
   });
-  ArduinoOTA.setHostname(readID().c_str());
+  ArduinoOTA.setHostname("robot");//readID().c_str());
   ArduinoOTA.begin();
 }
 

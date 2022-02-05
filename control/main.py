@@ -212,7 +212,7 @@ def walk():
     f.close()
 
     
-    s = SockClient(None,"192.168.3.103",8080)
+    s = SockClient(None,"192.168.3.50",8080)
 
     for frame in dt["frames"]:
         tm = int(frame["transition_time_ms"]) / 1000.0
@@ -223,6 +223,22 @@ def walk():
         time.sleep(tm)
     s.close()
 
+def initZero():
+    f = open("initList.json")
+    dt = json.load(f)
+    f.close()
+    os.remove("initList.json")
+    with open('initList.json', 'w') as fw:
+        json.dump(dt,fw)
+    s = SockClient(None,"192.168.3.50",8080)
+    for k in dt.keys():
+        s.sendbts(seg(2,int(k),int(dt[k])))
+        time.sleep(0.5)
+        print(k)
+    s.close()
+
+
+
 if __name__ == '__main__':
     # s = SockClient(None,"192.168.3.50",8080)
     # for i in range(0,18):
@@ -230,9 +246,12 @@ if __name__ == '__main__':
     #     time.sleep(0.5)
     # s.close()
 
-    # s.sendbts(seg(1,5,int(30)))
-    # time.sleep(1)
-    # s.sendbts(seg(1,5,int(80)))
+    # s.sendbts(seg(1,3,int(300)))
+    # time.sleep(3)
+    # s.sendbts(seg(1,3,int(100)))
     
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    asyncio.run(main())
+    # logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    # asyncio.run(main())
+
+    walk()
+    # initZero()

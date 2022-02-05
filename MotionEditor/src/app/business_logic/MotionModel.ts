@@ -1,10 +1,24 @@
 ﻿/// <reference path="./CodeModel.ts" />
 /// <reference path="./FrameModel.ts" />
 
-import * as _ from 'lodash'; 
+import { Injectable } from '@angular/core';
+import {FrameModel} from "./FrameModel";
+import { Subject } from 'rxjs';
 
+
+import * as _ from 'lodash'; 
+import * as $ from 'jquery';
+import {FrameFactory} from "../services/FrameFactory"
+
+@Injectable({
+    providedIn: 'root',
+})
 export class MotionModel
 {
+    test = new Subject<string>();
+    FrameLoadevent = new Subject<number>();
+    FrameLoadFinishedevent = new Subject<any>();
+
     slot: number = 44;
     name: string = "Empty";
     codes: Array<CodeModel>   = [];
@@ -13,8 +27,11 @@ export class MotionModel
     static MIN_FRAMES: number = 1;
     static MAX_FRAMES: number = 20;
 
+    static $inject = [
+        "$scope",
+    ];
+    
     constructor(
-        public $rootScope: ng.IRootScopeService,
         public frame_factory: FrameFactory
     )
     {
@@ -22,7 +39,7 @@ export class MotionModel
 
         $(window).on("beforeunload", () =>
         {
-            this.$rootScope.$broadcast("FrameSave", this.getSelectedFrameIndex());
+            this.FrameLoadevent.next(this.getSelectedFrameIndex()); // rootScope.$broadcast("FrameSave", this.getSelectedFrameIndex());
             localStorage.setItem("motion", this.saveJSON());
         });
     }
@@ -63,13 +80,13 @@ export class MotionModel
             return;
         }
 
-        var selected_frame: FrameModel = _.find(this.frames, (frame: FrameModel) =>
+        var selected_frame: FrameModel|undefined = _.find(this.frames, (frame: FrameModel) =>
         {
             return frame.selected;
         });
 
         var copy_index = _.findIndex(this.frames, (frame: FrameModel) => { return frame.selected; });
-        this.$rootScope.$broadcast("FrameSave", copy_index);
+        this.FrameLoadevent.next(copy_index);// this.$rootScope.$broadcast("FrameSave", copy_index);
 
         var insertion_frame = this.frame_factory.getFrame(false);
         insertion_frame.deepCopy(selected_frame);
@@ -84,16 +101,16 @@ export class MotionModel
         if (old_save)
         {
             var old_index = _.findIndex(this.frames,(frame: FrameModel) => { return frame.selected; });
-            this.$rootScope.$broadcast("FrameSave", old_index);
+            this.FrameLoadevent.next(old_index);// this.$rootScope.$broadcast("FrameSave", old_index);
         }
 
         _.each(this.frames, (frame: FrameModel) => { frame.selected = false; });
         this.frames[index].selected = true;
-        this.$rootScope.$broadcast("FrameLoad", index);
+        this.FrameLoadevent.next(index);// this.$rootScope.$broadcast("FrameLoad", index);
 
         if (broadcast_finished)
         {
-            this.$rootScope.$broadcast("FrameLoadFinished");
+           this.FrameLoadFinishedevent.next(0);// this.$rootScope.$broadcast("FrameLoadFinished");
         }
     }
 
@@ -124,7 +141,7 @@ export class MotionModel
         this.codes  = [];
         this.frames = [this.frame_factory.getFrame()];
 
-        this.$rootScope.$broadcast("FrameLoad", 0);
+        this.FrameLoadevent.next(0);// this.$rootScope.$broadcast("FrameLoad", 0);
     }
 
     loadJSON(motion_json: string, axis_map: any): void
@@ -212,9 +229,9 @@ export class MotionModel
             _.each(motion_obj.codes, (code: CodeModel) =>
             {
                 var args = [];
-                _.each(code.arguments, (argment: string) =>
+                _.each(code.arguments, (argment: any) =>
                 {
-                    args.push(argment);
+                    args.push(argment as never);
                 });
 
                 this.codes.push(new CodeModel(code.method, args));
@@ -223,7 +240,7 @@ export class MotionModel
             this.frames = [];
             _.each(motion_obj.frames, (frame: FrameModel) =>
             {
-                var outputs = [];
+                var outputs = [] as any;
                 _.each(frame.outputs, (output: OutputDeviceModel) =>
                 {
                     outputs[axis_map[output.device]] = new OutputDeviceModel(output.device, output.value);
@@ -260,7 +277,7 @@ export class MotionModel
                 output.value = Math.round(output.value);
             });
 
-            motion_obj.frames.push(pure_frame);
+            motion_obj.frames.push(pure_frame as never);
         });
 
         return JSON.stringify(motion_obj, null, "\t");
