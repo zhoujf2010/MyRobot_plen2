@@ -1,0 +1,4 @@
+servo_bracket_hip_left 放宽2mm
+
+
+body 打薄1mm 加宽0.3各边   壁厚加1mm
