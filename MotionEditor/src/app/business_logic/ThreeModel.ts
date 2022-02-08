@@ -1,19 +1,29 @@
-﻿// @todo Divide into isolated *.d.ts.
-declare module THREE
-{
-    class TransformControls
-    {
-        constructor(object: Camera, domElement?: HTMLElement);
+﻿import { Injectable } from '@angular/core';
+import * as THREE from 'three';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 
-        setSpace(__: string): void;
-        setMode(__: string): void;
-        $onPointerDown(__: any): void;
+import * as _ from 'lodash'; 
 
-        object: Object3D;
-    }
-}
+// @todo Divide into isolated *.d.ts.
+// declare module THREE
+// {
+//     class TransformControls
+//     {
+//         constructor(object: Camera, domElement?: HTMLElement);
 
-class ThreeModel
+//         setSpace(__: string): void;
+//         setMode(__: string): void;
+//         $onPointerDown(__: any): void;
+
+//         object: Object3D;
+//     }
+// }
+
+@Injectable({
+    providedIn: 'root',
+})
+export class ThreeModel
 {
     layout: any;
 
@@ -27,7 +37,7 @@ class ThreeModel
     rotation_axes: Array<THREE.Object3D> = [];
     not_axes: Array<THREE.Object3D> = [];
 
-    orbit_controls: THREE.OrbitControls;
+    orbit_controls: OrbitControls;
     transform_controls: any;
 
     constructor()
@@ -49,7 +59,7 @@ class ThreeModel
 
         this.grid = new THREE.GridHelper(1000, 100);
         this.grid.position.set(0, 0, 0);
-        this.grid.setColors(0xB2DB11, 0xFFFFFF);
+        // this.grid.setColors(0xB2DB11, 0xFFFFFF);
         this.scene.add(this.grid);
 
         this.light = new THREE.SpotLight(0xBBBBBB);
@@ -59,13 +69,13 @@ class ThreeModel
         this.renderer.setSize(width, height);
         this.renderer.setClearColor(0x66BB6A);
 
-        this.orbit_controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        this.orbit_controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.orbit_controls.zoomSpeed = 0.3;
         this.orbit_controls.minDistance = 10;
         this.orbit_controls.maxDistance = 2000;
-        this.orbit_controls.enable();
+        this.orbit_controls.enabled = true;
 
-        this.transform_controls = new THREE.TransformControls(this.camera, this.renderer.domElement);
+        this.transform_controls = new TransformControls(this.camera, this.renderer.domElement);
         this.transform_controls.setSpace("local");
         this.transform_controls.setMode("rotate");
         this.scene.add(this.transform_controls);
@@ -126,9 +136,10 @@ class ThreeModel
         var pointer_vector = new THREE.Vector3((x * 2) - 1, -(y * 2) + 1, 0.5);
         pointer_vector.unproject(this.camera);
 
+        
         var ray = new THREE.Raycaster(
-            this.camera.getWorldPosition(),
-            pointer_vector.sub(this.camera.getWorldPosition()).normalize()
+            this.camera.getWorldPosition(pointer_vector),
+            pointer_vector.sub(this.camera.getWorldPosition(pointer_vector)).normalize()
         );
 
         var intersections = ray.intersectObjects(this.not_axes, true);
@@ -141,14 +152,15 @@ class ThreeModel
                 if (axis === intersections[0].object.parent)
                 {
                     this.transform_controls.attach(axis);
-                    this.orbit_controls.disable();
+                    this.orbit_controls.enabled = false;
                     result = true;
 
                     return false;
                 }
                 else
                 {
-                    this.orbit_controls.enable();
+                    this.orbit_controls.enabled = true;
+                    return true;
                 }
             });
         }
@@ -192,9 +204,9 @@ class ThreeModel
         }
     }
 
-    getDiffAngle(axis_object: THREE.Object3D, index: number = null): any
+    getDiffAngle(axis_object: THREE.Object3D, index: number = 0): any
     {
-        var angle_diff = null;
+        var angle_diff = 0;
 
         if (!_.isUndefined(axis_object))
         {
@@ -232,7 +244,7 @@ class ThreeModel
         return angle_diff;
     }
 
-    setDiffAngle(axis_object: THREE.Object3D, angle_diff: number, index: number = null): void
+    setDiffAngle(axis_object: THREE.Object3D, angle_diff: number, index: number = 0): void
     {
         var theta_diff = angle_diff * Math.PI / 1800;
 

@@ -2,7 +2,25 @@
 /// <reference path="../../services/SharedMotionService.ts" />
 /// <reference path="../../services/ImageStoreService.ts" />
 
-class ModelEditorController
+import { Component, OnInit } from '@angular/core';
+import {ThreeModel} from '../../business_logic/ThreeModel';
+import {ModelLoader} from '../../business_logic/ModelLoader';
+import {FrameModel} from '../../business_logic/FrameModel';
+import {MotionModel} from '../../business_logic/MotionModel';
+import {ImageStoreService} from '../../services/ImageStoreService';
+import {Gscope} from '../../services/Gscope';
+
+import * as _ from 'lodash'; 
+import * as $ from 'jquery';
+import { Object3D } from 'three';
+
+
+@Component({
+    selector: 'model-editor',
+    templateUrl: './view.html',
+    styleUrls: []
+  })
+  export class ModelEditorController implements OnInit 
 {
     disabled: boolean = false;
 
@@ -13,23 +31,61 @@ class ModelEditorController
         "SharedMotionService",
         "ImageStoreService"
     ];
+    layout={};
+    static WIDTH_OFFSET: number  = 220 + 45;
+    static HEIGHT_OFFSET: number = 186 + 40;
+    layout_height= 0;
+    layout_width = 0;
 
     constructor(
-        $scope: ng.IScope,
+        public scope: Gscope,
         public model_loader: ModelLoader,
         public three_model: ThreeModel,
         public motion: MotionModel,
         public image_store_service: ImageStoreService
     )
     {
-        $scope.$on("ComponentDisabled", () => { this.disabled = true; });
-        $scope.$on("ComponentEnabled", () => { this.disabled = false; });
+        
+        scope.ComponentDisabled.subscribe((item)=>{this.disabled = true;});
+        scope.ComponentEnabled.subscribe((item)=>{this.disabled = false;});
+        scope.E3DModelReset.subscribe((item)=>{this.on3DModelReset();});
+        scope.E3DModelLoaded.subscribe((item)=>{this.on3DModelLoaded();});
+        
+        scope.RefreshThumbnail.subscribe((item)=>{this.onRefreshThumbnail();});
+        scope.FrameSave.subscribe((item)=>{this.onFrameSave(item); });
+        scope.FrameLoad.subscribe((item)=>{this.onFrameLoad(item);});
 
-        $scope.$on("3DModelLoaded", () => { this.on3DModelLoaded(); });
-        $scope.$on("3DModelReset", () => { this.on3DModelReset(); });
-        $scope.$on("RefreshThumbnail", () => { this.onRefreshThumbnail(); });
-        $scope.$on("FrameSave", (event, frame_index: number) => { this.onFrameSave(frame_index); });
-        $scope.$on("FrameLoad", (event, frame_index: number) => { this.onFrameLoad(frame_index); });
+        this.layout = {
+            width: () =>
+            {
+                return window.innerWidth - ModelEditorController.WIDTH_OFFSET;
+            },
+            height: () =>
+            {
+                return window.innerHeight - ModelEditorController.HEIGHT_OFFSET;
+            },
+            resizeFook: () =>
+            {
+                three_model.resize();
+            }
+        };
+        this.layout_height = window.innerHeight - ModelEditorController.HEIGHT_OFFSET +20;
+        this.layout_width = window.innerWidth - ModelEditorController.WIDTH_OFFSET +20;
+
+        
+    }
+    ngOnInit(): void {
+        // $('#canvas_wrapper').text("Hello");
+        this.three_model.init($('#canvas_wrapper'), this.layout);
+        this.three_model.animate();
+
+        this.model_loader.scene = this.three_model.scene;
+        this.model_loader.loadJSON();
+
+    }
+
+    onResize():void{
+        this.three_model.resize();
     }
 
     on3DModelLoaded(): void
@@ -83,7 +139,7 @@ class ModelEditorController
         {
             _.each(this.motion.frames[frame_index].outputs, (output: OutputDeviceModel, index: number) =>
             {
-                this.three_model.setDiffAngle(null, output.value, index);
+                this.three_model.setDiffAngle(new Object3D(), output.value, index);
             });
         }
 
@@ -126,7 +182,7 @@ class ModelEditorController
     onUnfocus(): void
     {
         this.three_model.transform_controls.detach();
-        this.three_model.orbit_controls.enable();
+        this.three_model.orbit_controls.enabled = true;
 
         this.setImage();
     }
@@ -142,6 +198,7 @@ class ModelEditorController
         {
             return frame.selected;
         });
-        selected_frame.image_uri = this.image_store_service.get();
+        if ( selected_frame!= undefined)
+            selected_frame.image_uri = this.image_store_service.get();
     }
 }

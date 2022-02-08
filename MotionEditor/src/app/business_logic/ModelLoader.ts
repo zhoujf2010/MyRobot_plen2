@@ -1,6 +1,9 @@
 ﻿import { Injectable } from '@angular/core';
 import * as THREE from 'three';
 import * as _ from 'lodash'; 
+import * as $ from 'jquery';
+import fetch from 'node-fetch';
+import {Gscope} from '../services/Gscope';
 
 
 @Injectable({
@@ -15,6 +18,7 @@ export class ModelLoader
     scene: THREE.Scene;
 
     constructor(
+        public scope: Gscope,
         // public $rootScope: ng.IRootScopeService,
         // public $http: ng.IHttpService
     )
@@ -85,31 +89,30 @@ export class ModelLoader
 
     loadJSON(): void
     {
-        // this.$http.get("./assets/etc/plen2_3dmodel.min.json")
-        //     .success((data) =>
-        //     {
-        //         var model_obj:any = data;
+        $.ajax({
+            url:"./assets/etc/plen2_3dmodel.min.json",
+            success:(data)=>{
+                var model_obj:any = data;
 
-        //         if (model_obj.metadata.type.toLowerCase() === "object")
-        //         {
-        //             var loader = new THREE.ObjectLoader();
-        //             var result = loader.parse(model_obj);
+                if (model_obj.metadata.type.toLowerCase() === "object")
+                {
+                    var loader = new THREE.ObjectLoader();
+                    var result = loader.parse(model_obj);
 
-        //             if (result instanceof THREE.Scene)
-        //             {
-        //                 this.setScene(result);
-        //             }
-        //             else
-        //             {
-        //                 this.addObject(result);
-        //             }
-
-        //             this.$rootScope.$broadcast("3DModelLoaded");
-        //         }
-        //     })
-        //     .error(() =>
-        //     {
-        //         alert("Loading a 3D model failed. (Please refresh this page.)");
-        //     });
+                    if (result instanceof THREE.Scene)
+                    {
+                        this.setScene(result);
+                    }
+                    else
+                    {
+                        this.addObject(result);
+                    }
+                    this.scope.E3DModelLoaded.next(0); // this.$rootScope.$broadcast("3DModelLoaded");
+                }
+            },
+            error:(error) => {
+                alert("Loading a 3D model failed. (Please refresh this page.)"+error);
+            }
+        })
     }
 } 

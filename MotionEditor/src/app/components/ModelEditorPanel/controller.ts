@@ -1,4 +1,15 @@
-﻿class ModelEditorPanelController
+﻿
+import { Component, OnInit } from '@angular/core';
+import {ThreeModel} from '../../business_logic/ThreeModel';
+
+import {Gscope} from '../../services/Gscope';
+
+@Component({
+    selector: 'model-editor-panel',
+    templateUrl: './view.html',
+    styleUrls: []
+  })
+  export class ModelEditorPanelController
 {
     disabled: boolean = false;
 
@@ -11,15 +22,13 @@
     ];
 
     constructor(
-        $scope: ng.IScope,
-        public $rootScope: ng.IRootScopeService,
+        public scope: Gscope,
         three_model: ThreeModel
     )
     {
         this._three_model = three_model;
-
-        $scope.$on("ComponentDisabled", () => { this.disabled = true; });
-        $scope.$on("ComponentEnabled", () => { this.disabled = false; });
+        scope.ComponentDisabled.subscribe((item)=>{this.disabled = true;});
+        scope.ComponentEnabled.subscribe((item)=>{this.disabled = false;});
     }
 
     onClick(id: number): void
@@ -47,7 +56,7 @@
                 break;
 
             case 4:
-                this.$rootScope.$broadcast("3DModelReset");
+                this.scope.E3DModelReset.next(0);
 
                 break;
 
@@ -55,6 +64,6 @@
                 return;
         }
 
-        this.$rootScope.$broadcast("RefreshThumbnail");
+        this.scope.RefreshThumbnail.next(0);
     }
 } 
