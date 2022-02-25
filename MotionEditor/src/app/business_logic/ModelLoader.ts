@@ -29,17 +29,17 @@ export class ModelLoader
 
     addRotationAxis(object: THREE.Object3D): void
     {
-        if (/roll$/.test(object.name))
+        if (/_roll/.test(object.name))
         {
             this.rotation_axes.push(object);
             this.home_quaternions.push(object.quaternion.clone());
         }
-        else if (/pitch$/.test(object.name))
+        else if (/_pitch/.test(object.name))
         {
             this.rotation_axes.push(object);
             this.home_quaternions.push(object.quaternion.clone());
         }
-        else if (/yaw$/.test(object.name))
+        else if (/_yaw/.test(object.name))
         {
             this.rotation_axes.push(object);
             this.home_quaternions.push(object.quaternion.clone());
@@ -90,7 +90,7 @@ export class ModelLoader
     loadJSON(): void
     {
         $.ajax({
-            url:"./assets/etc/plen2_3dmodel.min.json",
+            url:"./assets/etc/plen2_3dmodel.json",
             success:(data)=>{
                 var model_obj:any = data;
 

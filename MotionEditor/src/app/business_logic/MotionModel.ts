@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 import {FrameModel} from "./FrameModel";
 import { Subject } from 'rxjs';
 import {Gscope} from '../services/Gscope';
+import {OutputDeviceModel} from "./OutputDeviceModel";
 
 
 import * as _ from 'lodash'; 
@@ -98,6 +99,7 @@ export class MotionModel
 
     selectFrame(index: number, old_save: boolean = true, broadcast_finished: boolean = true): void
     {
+        console.info("---------->"+index);
         if (old_save)
         {
             var old_index = _.findIndex(this.frames,(frame: FrameModel) => { return frame.selected; });
@@ -148,6 +150,7 @@ export class MotionModel
     {
         try {
             var motion_obj = JSON.parse(motion_json);
+            // console.log(motion_json);
 
             if (_.isUndefined(motion_obj.slot) || !_.isNumber(motion_obj.slot))
             {
@@ -253,6 +256,7 @@ export class MotionModel
         }
         catch (exception)
         {
+            console.error(exception);
             alert("Loading a motion file failed. This file has invalid format.");
         }
     }

@@ -1,4 +1,4 @@
-﻿class OutputDeviceModel
+﻿export class OutputDeviceModel
 {
     device: string;
     value: number;

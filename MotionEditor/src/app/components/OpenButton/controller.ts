@@ -6,6 +6,7 @@
 import {MotionModel} from '../../business_logic/MotionModel';
 import {ModelLoader} from '../../business_logic/ModelLoader';
 // import {EventService} from '../../services/EventService';
+import {Gscope} from '../../services/Gscope';
 
 import * as $ from 'jquery';
 
@@ -24,31 +25,20 @@ export class OpenButtonController
     ];
 
     constructor(
-    //    $scope: ng.IScope, 
-    // $scope: app.IScope,
-    //    public event:EventService<string>,
+        public scope: Gscope,
         public motion: MotionModel,
         public model_loader: ModelLoader 
     )
     {
-        // var scope = $rootScope;
-
-        // $scope.$on("ComponentDisabled", () => { this.disabled = true; });
-        // $scope.$on("ComponentEnabled", () => { this.disabled = false; });
-
-        // event.Subscribe("aa").subscribe((item)=>{alert(item);});
-        motion.test.subscribe((item)=>{alert(item);});
+        scope.ComponentDisabled.subscribe((item)=>{this.disabled = true; });
+        scope.ComponentEnabled.subscribe((item)=>{this.disabled = false; });
     }
 
     onchange(event:any):void{
         var reader = new FileReader();
         reader.onload = (event: any) =>
         {
-            // this.event.Broadcast("aa","xxx");
-            // alert(event.target.result);
             this.motion.loadJSON(event.target.result, this.model_loader.getAxisMap());
-            // $scope.$ctrl.motion.loadJSON(event.target.result, model_loader.getAxisMap());
-            // $scope.$apply();
         };
 
         reader.readAsText(event.target.files[0]);

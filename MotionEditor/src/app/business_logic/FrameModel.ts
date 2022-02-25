@@ -1,5 +1,6 @@
 ﻿/// <reference path="./OutputDeviceModel.ts" />
 
+import {OutputDeviceModel} from "./OutputDeviceModel";
 
 import * as _ from 'lodash'; 
 

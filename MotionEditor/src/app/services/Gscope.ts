@@ -22,4 +22,12 @@ export class Gscope
     FrameLoad  = new Subject<number>();
     FrameLoadFinished = new Subject<any>();
 
+    AnimationPlay =   new Subject<any>();
+    AnimationStop =   new Subject<any>();
+    AnimationNext =   new Subject<any>();
+    AnimationPrevious =   new Subject<any>();
+
+    angleChange  =   new Subject<any>();
+    InstallFinished  =   new Subject<any>();
+
 }

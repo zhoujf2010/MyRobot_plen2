@@ -1,3 +1,5 @@
-﻿<button ng-click="$ctrl.onClick()" class="button-menu" type="button" title="{{ $ctrl.title }}">
-  <i class="fa fa-fw fa-4x" ng-class="{ 'fa-play': (!$ctrl.playing && !$ctrl.installing), 'fa-spinner fa-spin': $ctrl.installing, 'fa-pause': ($ctrl.playing && !$ctrl.installing) }"></i>
+﻿<button (click)="onClick()" class="button-menu" type="button" title="{{ title }}">
+  <i class="fa fa-fw fa-4x" 
+  class='{{installing?"fa-spinner fa-spin":!playing?"fa-play":"fa-pause"}}'
+  ></i>
 </button>

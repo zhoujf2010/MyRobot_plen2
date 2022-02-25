@@ -1,9 +1,21 @@
-﻿/// <reference path="./MotionModel.ts" />
-/// <reference path="./ThreeModel.ts" />
-/// <reference path="../angularjs/services/SharedMotionService.ts" />
-/// <reference path="../angularjs/services/SharedThreeService.ts" />
+﻿// / <reference path="./MotionModel.ts" />
+// / <reference path="./ThreeModel.ts" />
+// / <reference path="../angularjs/services/SharedMotionService.ts" />
+// / <reference path="../angularjs/services/SharedThreeService.ts" />
 
-class AnimationHelper
+import { Injectable } from '@angular/core';
+
+import {MotionModel} from "./MotionModel";
+import {Gscope} from '../services/Gscope';
+import * as _ from 'lodash'; 
+import * as $ from 'jquery';
+
+import {OutputDeviceModel} from "./OutputDeviceModel";
+
+@Injectable({
+    providedIn: 'root',
+})
+export class AnimationHelper
 {
     static $inject = [
         "$rootScope",
@@ -18,15 +30,16 @@ class AnimationHelper
     private _animation_promise: any;
 
     constructor(
-        public $rootScope: ng.IRootScopeService,
-        public $interval: ng.IIntervalService,
+        public scope: Gscope,
+        // public $rootScope: ng.IRootScopeService,
+        // public $interval: ng.IIntervalService,
         public motion: MotionModel
     )
     {
-        $rootScope.$on("AnimationPlay", () => { this.onAnimationPlay(); });
-        $rootScope.$on("AnimationStop", () => { this.onAnimationStop(); });
+        scope.AnimationPlay.subscribe((item)=>{this.onAnimationPlay();});
+        scope.AnimationStop.subscribe((item)=>{this.onAnimationStop();});
 
-        $rootScope.$on("AnimationPrevious", () =>
+        scope.AnimationPrevious.subscribe((item)=>
         {
             var now_frame_index = this.motion.getSelectedFrameIndex();
 
@@ -36,11 +49,11 @@ class AnimationHelper
             }
             else
             {
-                $rootScope.$broadcast("ComponentEnabled");
+                scope.ComponentEnabled.next(0);
             }
         });
 
-        $rootScope.$on("AnimationNext", () =>
+        scope.AnimationNext.subscribe((item)=>
         {
             var now_frame_index = this.motion.getSelectedFrameIndex();
 
@@ -50,7 +63,7 @@ class AnimationHelper
             }
             else
             {
-                $rootScope.$broadcast("ComponentEnabled");
+                scope.ComponentEnabled.next(0);
             }
         });
     }
@@ -72,15 +85,15 @@ class AnimationHelper
             this._angle_diffs.push((next_frame.outputs[index].value - output.value) / transition_count);
         });
 
-        this._animation_promise = this.$interval(() =>
-        {
-            _.each(this._angle_diffs, (angle_diff: number, index: number) =>
-            {
-                now_frame.outputs[index].value += angle_diff;
-            });
+        // this._animation_promise = this.$interval(() =>
+        // {
+        //     _.each(this._angle_diffs, (angle_diff: number, index: number) =>
+        //     {
+        //         now_frame.outputs[index].value += angle_diff;
+        //     });
 
-            this.$rootScope.$broadcast("FrameLoad", now_frame_index);
-        }, (1000 / AnimationHelper.FPS), transition_count);
+        //     this.scope.FrameLoad.next(now_frame_index);
+        // }, (1000 / AnimationHelper.FPS), transition_count);
 
         this._animation_promise.catch(() =>
         {
@@ -98,7 +111,7 @@ class AnimationHelper
 
             if (continuous_callback === null)
             {
-                this.$rootScope.$broadcast("ComponentEnabled");
+                this.scope.ComponentEnabled.next(0);
             }
             else
             {
@@ -110,9 +123,9 @@ class AnimationHelper
     onAnimationPlay(): void
     {
         var use_loop: boolean      = false;
-        var loop_begin: number     = null;
-        var loop_end: number       = null;
-        var loop_count: number     = null;
+        var loop_begin: number     = 0;
+        var loop_end: number       = 0;
+        var loop_count: number     = 0;
         var loop_infinity: boolean = false;
 
         _.each(this.motion.codes, (code: CodeModel) =>
@@ -132,6 +145,7 @@ class AnimationHelper
 
                 return false;
             }
+            return false;
         });
 
         var callback = () =>
@@ -155,7 +169,7 @@ class AnimationHelper
             }
             else
             {
-                this.$rootScope.$broadcast("ComponentEnabled");
+                this.scope.ComponentEnabled.next(0);
             }
         };
 
@@ -169,12 +183,12 @@ class AnimationHelper
         }
         else
         {
-            this.$rootScope.$broadcast("ComponentEnabled");
+            this.scope.ComponentEnabled.next(0);
         }
     }
 
     onAnimationStop(): void
     {
-        this.$interval.cancel(this._animation_promise);
+        // this.$interval.cancel(this._animation_promise);
     }
 }

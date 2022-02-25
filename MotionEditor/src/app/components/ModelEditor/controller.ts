@@ -10,6 +10,8 @@ import {MotionModel} from '../../business_logic/MotionModel';
 import {ImageStoreService} from '../../services/ImageStoreService';
 import {Gscope} from '../../services/Gscope';
 
+import {OutputDeviceModel} from "../../business_logic/OutputDeviceModel";
+
 import * as _ from 'lodash'; 
 import * as $ from 'jquery';
 import { Object3D } from 'three';
@@ -78,6 +80,20 @@ import { Object3D } from 'three';
         // $('#canvas_wrapper').text("Hello");
         this.three_model.init($('#canvas_wrapper'), this.layout);
         this.three_model.animate();
+
+           // The hook when pointer is focused.
+           $('#canvas_wrapper canvas').on('mousedown touchstart', (event: Event) =>
+           {
+               this.onFocus(event);
+           });
+
+           // The hook when pointer is unfocused.
+           $('#canvas_wrapper canvas').on('mouseup mouseout touchend touchcancel touchleave', () =>
+           {
+            this.onUnfocus();
+            //    $scope.$apply();
+           });
+
 
         this.model_loader.scene = this.three_model.scene;
         this.model_loader.loadJSON();
@@ -155,6 +171,7 @@ import { Object3D } from 'three';
         {
             return;
         }
+        // console.info($event.clientX + " == " + $event.clientY);
 
         if (!_.isUndefined($event.touches))
         {
@@ -164,7 +181,8 @@ import { Object3D } from 'three';
 
                 if (intersected)
                 {
-                    this.three_model.transform_controls.$onPointerDown($event);
+                    // this.three_model.transform_controls.$onPointerDown($event);
+                    
                 }
             }
         }
@@ -174,15 +192,15 @@ import { Object3D } from 'three';
 
             if (intersected)
             {
-                this.three_model.transform_controls.$onPointerDown($event);
+                // this.three_model.transform_controls.$onPointerDown($event);
             }
         }
     }
 
     onUnfocus(): void
     {
-        this.three_model.transform_controls.detach();
-        this.three_model.orbit_controls.enabled = true;
+        // this.three_model.transform_controls.detach();
+        // this.three_model.orbit_controls.enabled = true;
 
         this.setImage();
     }
