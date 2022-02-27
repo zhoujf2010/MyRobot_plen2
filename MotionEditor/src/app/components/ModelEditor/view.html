@@ -1,3 +1,5 @@
 ﻿<div id="model_editor">
-    <div id="canvas_wrapper" auto-resize auto-resize-layout="$model_editor.layout" auto-resize-onload="true"></div>
+    <div id="canvas_wrapper"  
+    style="height:{{layout_height}}px;width:{{layout_width}}px"
+    (resize)="onResize()"></div>
 </div>

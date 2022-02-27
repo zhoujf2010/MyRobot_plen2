@@ -4,6 +4,7 @@
 import { Injectable } from '@angular/core';
 import {FrameModel} from "./FrameModel";
 import { Subject } from 'rxjs';
+import {Gscope} from '../services/Gscope';
 
 
 import * as _ from 'lodash'; 
@@ -16,8 +17,6 @@ import {FrameFactory} from "../services/FrameFactory"
 export class MotionModel
 {
     test = new Subject<string>();
-    FrameLoadevent = new Subject<number>();
-    FrameLoadFinishedevent = new Subject<any>();
 
     slot: number = 44;
     name: string = "Empty";
@@ -32,6 +31,7 @@ export class MotionModel
     ];
     
     constructor(
+        public scope: Gscope,
         public frame_factory: FrameFactory
     )
     {
@@ -39,7 +39,7 @@ export class MotionModel
 
         $(window).on("beforeunload", () =>
         {
-            this.FrameLoadevent.next(this.getSelectedFrameIndex()); // rootScope.$broadcast("FrameSave", this.getSelectedFrameIndex());
+            this.scope.FrameLoad.next(this.getSelectedFrameIndex()); // rootScope.$broadcast("FrameSave", this.getSelectedFrameIndex());
             localStorage.setItem("motion", this.saveJSON());
         });
     }
@@ -86,7 +86,7 @@ export class MotionModel
         });
 
         var copy_index = _.findIndex(this.frames, (frame: FrameModel) => { return frame.selected; });
-        this.FrameLoadevent.next(copy_index);// this.$rootScope.$broadcast("FrameSave", copy_index);
+        this.scope.FrameLoad.next(copy_index);// this.$rootScope.$broadcast("FrameSave", copy_index);
 
         var insertion_frame = this.frame_factory.getFrame(false);
         insertion_frame.deepCopy(selected_frame);
@@ -101,16 +101,16 @@ export class MotionModel
         if (old_save)
         {
             var old_index = _.findIndex(this.frames,(frame: FrameModel) => { return frame.selected; });
-            this.FrameLoadevent.next(old_index);// this.$rootScope.$broadcast("FrameSave", old_index);
+            this.scope.FrameLoad.next(old_index);// this.$rootScope.$broadcast("FrameSave", old_index);
         }
 
         _.each(this.frames, (frame: FrameModel) => { frame.selected = false; });
         this.frames[index].selected = true;
-        this.FrameLoadevent.next(index);// this.$rootScope.$broadcast("FrameLoad", index);
+        this.scope.FrameLoad.next(index);// this.$rootScope.$broadcast("FrameLoad", index);
 
         if (broadcast_finished)
         {
-           this.FrameLoadFinishedevent.next(0);// this.$rootScope.$broadcast("FrameLoadFinished");
+            this.scope.FrameLoadFinished.next(0);// this.$rootScope.$broadcast("FrameLoadFinished");
         }
     }
 
@@ -141,7 +141,7 @@ export class MotionModel
         this.codes  = [];
         this.frames = [this.frame_factory.getFrame()];
 
-        this.FrameLoadevent.next(0);// this.$rootScope.$broadcast("FrameLoad", 0);
+        this.scope.FrameLoad.next(0);// this.$rootScope.$broadcast("FrameLoad", 0);
     }
 
     loadJSON(motion_json: string, axis_map: any): void

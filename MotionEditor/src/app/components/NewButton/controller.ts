@@ -1,30 +1,31 @@
 ﻿/// <reference path="../../services/SharedMotionService.ts" />
 
-class NewButtonController
+import {Gscope} from '../../services/Gscope';
+import { Component, OnInit } from '@angular/core';
+import {MotionModel} from '../../business_logic/MotionModel';
+
+
+@Component({
+    selector: 'new-button',
+    templateUrl: './view.html',
+    styleUrls: []
+  })
+  export class NewButtonController
 {
     disabled: boolean = false;
 
-    static $inject = [
-        "$rootScope",
-        "$scope",
-        "$window",
-        "SharedMotionService"
-    ];
-
     constructor(
-        public $rootScope: ng.IRootScopeService,
-        $scope: ng.IScope,
-        public $window: ng.IWindowService,
+        public scope: Gscope,
         public motion: MotionModel
     )
     {
-        $scope.$on("ComponentDisabled", () => { this.disabled = true; });
-        $scope.$on("ComponentEnabled", () => { this.disabled = false; });
+        scope.ComponentDisabled.subscribe((item)=>{this.disabled = true;});
+        scope.ComponentEnabled.subscribe((item)=>{this.disabled = false;});
     }
 
     onClick(): void
     {
-        var result = this.$window.confirm(
+        var result = window.confirm(
 `Are you sure you want to create a new motion?
 
 Working contents will have destroyed.
@@ -34,7 +35,7 @@ If your motion has not been saved yet, please click to the "Cancel" button.`
         if (result === true)
         {
             this.motion.reset();
-            this.$rootScope.$broadcast("3DModelReset");
+            this.scope.E3DModelReset.next(0); //this.$rootScope.$broadcast("3DModelReset");
         }
     }
 }
