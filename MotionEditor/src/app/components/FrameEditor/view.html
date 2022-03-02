@@ -1,4 +1,4 @@
-﻿<div id="frame_editor" ui-sortable="$ctrl.sortable_options" (click)="onClick($event)"   [(ngModel)]="motion.frames">
+﻿<div id="frame_editor" ui-sortable="$ctrl.sortable_options" (click)="onClick($event)"   >
     <div class="frame"
     *ngFor="let frame of motion.frames;let i = index"
     class="{{frame.selected? 'frame-selected':'' }}"

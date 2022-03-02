@@ -1,4 +1,4 @@
-﻿class CodeModel
+﻿export class CodeModel
 {
     method: string;
     arguments: Array<number>;

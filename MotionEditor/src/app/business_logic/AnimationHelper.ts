@@ -6,11 +6,13 @@
 import { Injectable } from '@angular/core';
 
 import {MotionModel} from "./MotionModel";
+import {CodeModel} from "./CodeModel";
 import {Gscope} from '../services/Gscope';
 import * as _ from 'lodash'; 
 import * as $ from 'jquery';
 
 import {OutputDeviceModel} from "./OutputDeviceModel";
+import {IntervalService} from './IntervalService';
 
 @Injectable({
     providedIn: 'root',
@@ -31,14 +33,13 @@ export class AnimationHelper
 
     constructor(
         public scope: Gscope,
-        // public $rootScope: ng.IRootScopeService,
-        // public $interval: ng.IIntervalService,
+        public interval:IntervalService,
         public motion: MotionModel
     )
     {
         scope.AnimationPlay.subscribe((item)=>{this.onAnimationPlay();});
         scope.AnimationStop.subscribe((item)=>{this.onAnimationStop();});
-
+        
         scope.AnimationPrevious.subscribe((item)=>
         {
             var now_frame_index = this.motion.getSelectedFrameIndex();
@@ -84,40 +85,37 @@ export class AnimationHelper
             this._outputs_backup.push(output.value);
             this._angle_diffs.push((next_frame.outputs[index].value - output.value) / transition_count);
         });
+       
+        this._animation_promise = this.interval.create(()=>{
+            _.each(this._angle_diffs, (angle_diff: number, index: number) =>
+                {
+                    now_frame.outputs[index].value += angle_diff;
+                });
+    
+                this.scope.FrameLoad.next(now_frame_index);
+        }, (1000 / AnimationHelper.FPS), transition_count);
 
-        // this._animation_promise = this.$interval(() =>
-        // {
-        //     _.each(this._angle_diffs, (angle_diff: number, index: number) =>
+        // this._animation_promise.catch(() =>
         //     {
-        //         now_frame.outputs[index].value += angle_diff;
+        //         continuous_callback = null;
         //     });
-
-        //     this.scope.FrameLoad.next(now_frame_index);
-        // }, (1000 / AnimationHelper.FPS), transition_count);
-
-        this._animation_promise.catch(() =>
-        {
-            continuous_callback = null;
-        });
-
-        this._animation_promise.finally(() =>
-        {
+        this._animation_promise.finally(()=>{
             _.each(now_frame.outputs, (output: OutputDeviceModel, index: number) =>
-            {
-                output.value = this._outputs_backup[index];
-            });
-
-            this.motion.selectFrame(next_frame_index, false, false);
-
-            if (continuous_callback === null)
-            {
-                this.scope.ComponentEnabled.next(0);
-            }
-            else
-            {
-                continuous_callback();
-            }
-        });
+                {
+                    output.value = this._outputs_backup[index];
+                });
+    
+                this.motion.selectFrame(next_frame_index, false, false);
+    
+                if (continuous_callback === null)
+                {
+                    this.scope.ComponentEnabled.next(0);
+                }
+                else
+                {
+                    continuous_callback();
+                }
+        })
     }
 
     onAnimationPlay(): void
@@ -189,6 +187,6 @@ export class AnimationHelper
 
     onAnimationStop(): void
     {
-        // this.$interval.cancel(this._animation_promise);
+        this.interval.cancel(this._animation_promise);
     }
 }

@@ -30,19 +30,18 @@ import { Object3D } from 'three';
     ];
 
     constructor(
-        // public $rootScope: ng.IRootScopeService,
+        public scope: Gscope,
         public motion_model: MotionModel,
-        // $scope: ng.IScope
     )
     {
-        // $scope.$on("ComponentDisabled", () => { this.disabled = true; });
-        // $scope.$on("ComponentEnabled", () => { this.disabled = false; });
+        scope.ComponentDisabled.subscribe((item)=>{this.disabled = true;});
+        scope.ComponentEnabled.subscribe((item)=>{this.disabled = false;});
     }
 
     onClick(): void
     {
-        // this.$rootScope.$broadcast("ComponentDisabled");
-        // this.$rootScope.$broadcast("FrameSave", this.motion_model.getSelectedFrameIndex());
-        // this.$rootScope.$broadcast("AnimationNext");
+        this.scope.ComponentDisabled.next(0);
+        this.scope.FrameSave.next(this.motion_model.getSelectedFrameIndex());
+        this.scope.AnimationNext.next(0);
     }
 }  

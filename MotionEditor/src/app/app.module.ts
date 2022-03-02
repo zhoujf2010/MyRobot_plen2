@@ -26,6 +26,7 @@ import {ModelLoader} from './business_logic/ModelLoader';
 import {ThreeModel} from './business_logic/ThreeModel';
 import {AnimationHelper} from './business_logic/AnimationHelper';
 import {Gscope} from './services/Gscope';
+import {IntervalService} from './business_logic/IntervalService';
 
 
 // The application module's namespace definition.
@@ -56,7 +57,8 @@ var APP_NAME = "MotionEditor";
     ModelLoader,
     ThreeModel,
     Gscope,
-    AnimationHelper
+    AnimationHelper,
+    IntervalService
   ],
   bootstrap: [AppComponent]
 })

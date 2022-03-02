@@ -1,11 +1,14 @@
-﻿/// <reference path="./CodeModel.ts" />
-/// <reference path="./FrameModel.ts" />
+﻿// / <reference path="./CodeModel.ts" />
+// / <reference path="./FrameModel.ts" />
 
 import { Injectable } from '@angular/core';
 import {FrameModel} from "./FrameModel";
 import { Subject } from 'rxjs';
 import {Gscope} from '../services/Gscope';
 import {OutputDeviceModel} from "./OutputDeviceModel";
+import {CodeModel} from "./CodeModel";
+
+
 
 
 import * as _ from 'lodash'; 
@@ -99,7 +102,7 @@ export class MotionModel
 
     selectFrame(index: number, old_save: boolean = true, broadcast_finished: boolean = true): void
     {
-        console.info("---------->"+index);
+        // console.info("---------->"+index);
         if (old_save)
         {
             var old_index = _.findIndex(this.frames,(frame: FrameModel) => { return frame.selected; });
