@@ -160,6 +160,16 @@ void loop() {
     while (client.available()) {
       buf1[i1] = (uint8_t)client.read(); // read char from client (RoboRemo app)
       i1++;
+      if (i1 == 2) {
+        int ch1 = buf1[0];
+        int ch2 = buf1[1];
+        if (ch1 == 0 && ch2 == 0)
+        {
+          String recstr = "OK";
+          client.write(recstr.c_str(), recstr.length());
+          i1 = 0;
+        }
+      }
       if (i1 == 5) {
         int cmd = buf1[0];
         int joint = buf1[1];

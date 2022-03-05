@@ -68,9 +68,10 @@
             <a href="./index" target="_blank">编辑器</a>
         </div>
         <div style="margin-left: 250px;">
-            文件名<input id="filename"></input>
+            文件名<input id="filename" value="46_Walk_Forward.json"></input>
             <input type="button" value="执行" style="width:50px;height:30px" onclick="Run()"></input>
             <input type="button" value="立正" style="width:50px;height:30px" onclick="Stand()"></input>
+            <input type="button" value="写入零位" style="width:50px;height:30px" onclick="WriteZero()"></input>
         </div>
     </div>
     <script>
@@ -122,11 +123,19 @@
         }
 
         function Run(){
-
+            var filename = $('#filename').val();
+            if (websocket != null)
+                websocket.send(JSON.stringify({ "action":"runAction","filename": filename }));
         }
 
         function Stand(){
-            
+            if (websocket != null)
+                websocket.send(JSON.stringify({ "action":"Reset"}));
+        }
+
+        function WriteZero(){
+            if (websocket != null)
+                websocket.send(JSON.stringify({ "action":"WriteZero"}));
         }
 
     </script>

@@ -30,4 +30,7 @@ export class Gscope
     angleChange  =   new Subject<any>();
     InstallFinished  =   new Subject<any>();
 
+
+    RobotConnected = new Subject<any>();
+    RobotDisConnected = new Subject<any>();
 }

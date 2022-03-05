@@ -1,5 +1,5 @@
-﻿/// <reference path="../../services/SharedMotionService.ts" />
-/// <reference path="../../services/AnimationHelperService.ts" />
+﻿// / <reference path="../../services/SharedMotionService.ts" />
+// / <reference path="../../services/AnimationHelperService.ts" />
 
 
 import { Component, OnInit } from '@angular/core';
