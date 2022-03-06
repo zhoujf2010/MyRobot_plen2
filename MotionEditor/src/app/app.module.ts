@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; 
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+
 
 import { AppComponent } from './app.component';
 import { TwitterButtonController } from './components/TwitterButton/controller';
@@ -52,7 +54,7 @@ var APP_NAME = "MotionEditor";
     LogoController
   ],
   imports: [
-    BrowserModule,FormsModule 
+    BrowserModule,FormsModule,NgbModule
   ],
   providers: [MotionModel,
     ModelLoader,

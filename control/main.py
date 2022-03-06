@@ -68,6 +68,11 @@ async def commonHandle(app, socketclient, msg):
                 app.robot.runAction(data["filename"])
             elif data["action"] == "Reset":
                 app.robot.reset()
+            elif data["action"] == "move": #接收到单部件移动指令
+                id = app.robot.getAngleID(data["name"])
+                angle = int(data["angle"])
+                v = app.robot.ajastAngle(angle,-1800,1800)
+                app.robot.almond_hass_start("",{"action":"set","angle":v,"channel":id})
             elif data["action"] == "query":
                 if app.robot.connected:
                     app.webclient.send_message({"action":"RobotConnect"})

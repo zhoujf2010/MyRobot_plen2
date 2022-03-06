@@ -69,7 +69,7 @@ export class PLENControlServerService
 
         const handleOpen = async (event: MessageEventInit) => {
             console.log("connected");
-            socket.send('{"action":"query"}');
+            this._socket.send('{"action":"query"}');
           };
         const handleMessage = async (event: MessageEvent) => {
             const message = JSON.parse(event.data);
@@ -84,12 +84,23 @@ export class PLENControlServerService
             console.log("closeMessage");
           };
 
-      const socket = new WebSocket(url) as WebSocket;
-      socket.addEventListener("message", handleMessage);
-      socket.addEventListener("open", handleOpen);
-      socket.addEventListener("close", closeMessage);
-      socket.addEventListener("error", closeMessage);
+        this._socket = new WebSocket(url) as WebSocket;
+        this._socket.addEventListener("message", handleMessage);
+        this._socket.addEventListener("open", handleOpen);
+        this._socket.addEventListener("close", closeMessage);
+        this._socket.addEventListener("error", closeMessage);
+    }
 
+    sendmsg(dt):void{
+        this._socket.send(JSON.stringify(dt));
+    }
+
+    sendAngle(name,angle):void{
+        this._socket.send('{"action":"move","name":"' + name + '","angle":"' + angle + '"}');
+    }
+
+    addStep(channel,angle):void{
+        this.sendmsg({ "action":"set","angle": angle, "channel": channel });
     }
 
     checkServerVersion(): void

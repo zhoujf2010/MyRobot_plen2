@@ -136,9 +136,19 @@ class Robot:
         dt.append(pwd % 256)
         return dt
 
+    def getAngleID(self,name):
+        return devices[name]
+
+    def ajastAngle(self,val,minval,maxval):
+        delt = maxval - minval
+        v = (val - minval)/delt
+        v = v * 1600 + (-800)
+        return int(v)
 
     def almond_hass_start(self, eventtype, data):
         '''获取界面信息'''
+        if not self.connected:
+            return
         _logger.info("action:%s,angle:%s,channel:%s" % (data["action"], data["angle"], data["channel"]))
         angle = data["angle"]
         channel = int(data["channel"])-1
