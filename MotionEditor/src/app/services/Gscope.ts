@@ -33,4 +33,6 @@ export class Gscope
 
     RobotConnected = new Subject<any>();
     RobotDisConnected = new Subject<any>();
+
+    ReadLoadData = new Subject<any>();
 }

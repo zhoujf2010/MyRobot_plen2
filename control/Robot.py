@@ -147,8 +147,8 @@ class Robot:
 
     def almond_hass_start(self, eventtype, data):
         '''获取界面信息'''
-        if not self.connected:
-            return
+        # if not self.connected:
+        #     return
         _logger.info("action:%s,angle:%s,channel:%s" % (data["action"], data["angle"], data["channel"]))
         angle = data["angle"]
         channel = int(data["channel"])-1
@@ -156,13 +156,13 @@ class Robot:
         if action == "set":
             self.send(self.seg(1, channel, int(angle)))
         elif action == "save":
-            self.initList[channel] = angle
-            self.send(self.seg(2, channel, int(angle)))
+            self.initList[str(channel)] = angle
             self.app.eventBus.async_fire("savetofile", self.initList)
+            self.send(self.seg(2, channel, int(angle)))
         elif action == "load":
             dt = 0
-            if channel in self.initList:
-                dt = self.initList[channel]
+            if str(channel) in self.initList:
+                dt = int(self.initList[str(channel)])
             data["socketclient"].send_message({"action": "load", "angle": dt, "channel": channel})
 
 
@@ -171,14 +171,14 @@ class Robot:
         _logger.info("action:reset")
         for i in range(18):
             self.send(self.seg(1,i,0))
-            time.sleep(0.1)
+            time.sleep(0.01)
 
     def writeZero(self):
         '''写入零位'''
         _logger.info("action:writeZero")
         for k in self.initList.keys():
             self.send(self.seg(2,int(k),int(self.initList[k])))
-            time.sleep(0.5)
+            time.sleep(0.01)
             print(k)
         
     def runAction(self, filename):

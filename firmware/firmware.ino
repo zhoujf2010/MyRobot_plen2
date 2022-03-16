@@ -78,7 +78,7 @@ void initServo() {
 }
 
 //路由器WIFI和密码
-const char* ssid = "zjf";
+const char* ssid = "qinhh";
 const char* password = "58766730";
 
 //静态地址、网关、子网掩码

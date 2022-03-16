@@ -32,7 +32,7 @@ def sigint_handler(a,b):
 async def RobotBridge(app):
     
     def savetofile(eventtype,data):
-        with open('initList.json', 'w') as fw:
+        with open(app.rootpath + '../initList.json', 'w') as fw:
             json.dump(data,fw)
 
     app.eventBus.async_listen("savetofile", savetofile)
@@ -68,6 +68,8 @@ async def commonHandle(app, socketclient, msg):
                 app.robot.runAction(data["filename"])
             elif data["action"] == "Reset":
                 app.robot.reset()
+            elif data["action"] == "writeZero":
+                app.robot.writeZero()
             elif data["action"] == "move": #接收到单部件移动指令
                 id = app.robot.getAngleID(data["name"])
                 angle = int(data["angle"])

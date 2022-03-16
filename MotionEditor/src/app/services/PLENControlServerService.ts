@@ -77,6 +77,8 @@ export class PLENControlServerService
                 scope.RobotDisConnected.next(0);
             else if (message["action"] =="RobotConnect")
                 scope.RobotConnected.next(0);
+            else if (message["action"] =="load")
+                scope.ReadLoadData.next([message["channel"],message["angle"]]);
             else
                 console.log(message);
         };
@@ -102,6 +104,27 @@ export class PLENControlServerService
     addStep(channel,angle):void{
         this.sendmsg({ "action":"set","angle": angle, "channel": channel });
     }
+
+    saveAngle(channel,angle):void{
+        this.sendmsg({ "action":"save","angle": angle, "channel": channel });
+    }
+
+    load0(channel):void{
+        this.sendmsg({ "action":"load", "channel": channel,"angle": -1 });
+    }
+
+    Run(filename):void{
+        this.sendmsg({ "action":"runAction", "filename": filename });
+    }
+
+    Stand():void{
+        this.sendmsg({ "action":"Reset" });
+    }
+
+    writeZero():void{
+        this.sendmsg({ "action":"writeZero" });
+    }
+
 
     checkServerVersion(): void
     {
