@@ -5,7 +5,6 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 
 import { AppComponent } from './app.component';
-import { TwitterButtonController } from './components/TwitterButton/controller';
 import { OpenButtonController } from './components/OpenButton/controller';
 import { SaveButtonController } from './components/SaveButton/controller';
 import { ModelEditorPanelController } from './components/ModelEditorPanel/controller';
@@ -18,7 +17,6 @@ import { PreviousButtonController } from './components/PreviousButton/controller
 import { NextButtonController } from './components/NextButton/controller';
 import { LogoController } from './components/Logo/controller';
 import { ChangeAngleController } from './components/ChangeAngleViewer/controller';
-
 
 import * as $ from 'jquery';
 
@@ -37,7 +35,6 @@ var APP_NAME = "MotionEditor";
 @NgModule({
   declarations: [
     AppComponent,
-    TwitterButtonController,
     OpenButtonController,
     SaveButtonController,
     ModelEditorPanelController,

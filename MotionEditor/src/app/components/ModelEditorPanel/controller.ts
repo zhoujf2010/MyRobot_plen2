@@ -12,12 +12,6 @@ export class ModelEditorPanelController {
 
     private _three_model: ThreeModel;
 
-    static $inject = [
-        "$scope",
-        "$rootScope",
-        "SharedThreeService"
-    ];
-
     constructor(
         public scope: Gscope,
         three_model: ThreeModel
@@ -49,5 +43,6 @@ export class ModelEditorPanelController {
         }
 
         this.scope.RefreshThumbnail.next(0);
+        this.scope.angleChange.next(0);
     }
 } 
