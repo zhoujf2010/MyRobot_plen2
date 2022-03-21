@@ -1,39 +1,31 @@
-﻿
-import { Injectable } from '@angular/core';
-
-
+﻿import { Injectable } from '@angular/core';
 
 @Injectable({
     providedIn: 'root',
 })
-export class ImageStoreService
-{
+export class ImageStoreService {
     private _image_canvas;
     private _context;
 
-    constructor()
-    {
+    constructor() {
         this._image_canvas = document.createElement("canvas");
-        this._image_canvas.width  = 150;
+        this._image_canvas.width = 150;
         this._image_canvas.height = 150;
 
         this._context = this._image_canvas.getContext("2d");
     }
 
-    set(image: any): void
-    {
+    set(image: any): void {
         var sx, sy, sw, sh;
 
-        if (image.width > image.height)
-        {
+        if (image.width > image.height) {
             sy = 0;
             sw = image.height;
             sh = image.height;
 
             sx = (image.width - sw) / 2;
         }
-        else
-        {
+        else {
             sx = 0;
             sw = image.width;
             sh = image.width;
@@ -44,10 +36,7 @@ export class ImageStoreService
         this._context.drawImage(image, sx, sy, sw, sh, 0, 0, 150, 150);
     }
 
-    get(): string
-    {
+    get(): string {
         return this._image_canvas.toDataURL();
     }
 }
-
-// angular.module(APP_NAME).service("ImageStoreService", ImageStoreService);

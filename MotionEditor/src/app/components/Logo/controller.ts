@@ -1,11 +1,8 @@
-﻿import { Component, OnInit } from '@angular/core';
-import * as angular from "angular";
-import { PLENControlServerService } from '../../services/PLENControlServerService';
-import { Gscope } from '../../services/Gscope';
+﻿import { Component } from '@angular/core';
+import { PLENControlServerService } from '../../business_logic/PLENControlServerService';
+import { Gscope } from '../../business_logic/Gscope';
 import { ThreeModel } from '../../business_logic/ThreeModel';
-import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
-
-
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'Logo-button',
@@ -15,10 +12,10 @@ import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 
 export class LogoController {
     logurl: string;
-    showmodel:boolean;
-    currentsel:number;
-    angle:number;
-    currentfile:string;
+    showmodel: boolean;
+    currentsel: number;
+    angle: number;
+    currentfile: string;
 
     constructor(
         public scope: Gscope,
@@ -32,7 +29,7 @@ export class LogoController {
         scope.RobotConnected.subscribe((item) => { this.logurl = "logo.png"; });
         scope.RobotDisConnected.subscribe((item) => { this.logurl = "logo2.png"; });
 
-        scope.ReadLoadData.subscribe((item)=>{this.angle=item[1]});
+        scope.ReadLoadData.subscribe((item) => { this.angle = item[1] });
 
         scope.angleChange.subscribe((item) => { this.onAngleChange() });
         this.showmodel = false;
@@ -47,43 +44,43 @@ export class LogoController {
     }
 
     onClick(): void {
-        // if (this.logurl == "logo2.png") {
-        //     alert("未连接机器人");
-        //     return;
-        // }
+        if (this.logurl == "logo2.png") {
+            alert("未连接机器人");
+            return;
+        }
         this.showmodel = true;
     }
 
-    closeModel():void{
+    closeModel(): void {
         this.showmodel = false;
     }
 
-    addStep(v:number):void{
+    addStep(v: number): void {
         this.angle += v;
-        this.plen_controll_server_service.addStep(this.currentsel,this.angle);
+        this.plen_controll_server_service.addStep(this.currentsel, this.angle);
     }
 
-    rangechg():void{
-        this.plen_controll_server_service.addStep(this.currentsel,this.angle);
+    rangechg(): void {
+        this.plen_controll_server_service.addStep(this.currentsel, this.angle);
     }
 
-    save():void{
-        this.plen_controll_server_service.saveAngle(this.currentsel,this.angle);
+    save(): void {
+        this.plen_controll_server_service.saveAngle(this.currentsel, this.angle);
     }
 
-    load0():void{
+    load0(): void {
         this.plen_controll_server_service.load0(this.currentsel);
     }
 
-    Run():void{
+    Run(): void {
         this.plen_controll_server_service.Run(this.currentfile);
     }
 
-    Stand():void{
+    Stand(): void {
         this.plen_controll_server_service.Stand();
     }
 
-    WriteZero():void{
+    WriteZero(): void {
         this.plen_controll_server_service.writeZero();
     }
 }  

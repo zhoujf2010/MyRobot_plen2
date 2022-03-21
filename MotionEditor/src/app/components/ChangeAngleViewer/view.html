@@ -1,8 +1,5 @@
-﻿<div  style='display: {{this.visible?"":"none"}};'>
-    <input type="range" id="angle" min="-800" max="800" id="hpro" 
-    [(ngModel)]="angle" (change)="rangechg()"/>
-
-
+﻿<div style='display: {{this.visible?"":"none"}};'>
+    <input type="range" id="angle" min="-800" max="800" id="hpro" [(ngModel)]="angle" (change)="rangechg()" />
     <button class="button-menu" type="button" (click)="onAddAngle(-10)">
         <i class="fa fa-fw fa-minus fa-4x"></i>
     </button>

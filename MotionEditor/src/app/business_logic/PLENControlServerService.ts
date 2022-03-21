@@ -1,27 +1,22 @@
-﻿enum SERVER_STATE
-{
+﻿enum SERVER_STATE {
     DISCONNECTED,
     CONNECTED,
     WAITING
 };
 
-import {ImageStoreService} from "../services/ImageStoreService";
-import {FrameModel} from "../business_logic/FrameModel";
-import {ThreeModel} from "../business_logic/ThreeModel";
+import { ThreeModel } from "../business_logic/ThreeModel";
 
-import {Gscope} from './Gscope';
+import { Gscope } from './Gscope';
 import { Injectable } from '@angular/core';
 import * as $ from 'jquery';
-import { post } from "jquery";
 
 @Injectable({
     providedIn: 'root',
 })
-export class PLENControlServerService
-{
+export class PLENControlServerService {
     private _state: SERVER_STATE = SERVER_STATE.DISCONNECTED;
     private _ip_addr: string;
-    private _socket: WebSocket ;
+    private _socket: WebSocket;
 
     static $inject = [
         '$q',
@@ -38,8 +33,7 @@ export class PLENControlServerService
         // private _$modal: angular.ui.bootstrap.IModalService,
         // private _$rootScope: ng.IRootScopeService,
         private _three: ThreeModel
-    )
-    {
+    ) {
         // this._$rootScope.$on("SyncBegin", () => { this.onSyncBegin(); });
         // this._$rootScope.$on("SyncEnd", () => { this.onSyncEnd(); });
 
@@ -72,21 +66,21 @@ export class PLENControlServerService
         const handleOpen = async (event: MessageEventInit) => {
             console.log("connected");
             this._socket.send('{"action":"query"}');
-          };
+        };
         const handleMessage = async (event: MessageEvent) => {
             const message = JSON.parse(event.data);
-            if (message["action"] =="RobotDisConnect")
+            if (message["action"] == "RobotDisConnect")
                 scope.RobotDisConnected.next(0);
-            else if (message["action"] =="RobotConnect")
+            else if (message["action"] == "RobotConnect")
                 scope.RobotConnected.next(0);
-            else if (message["action"] =="load")
-                scope.ReadLoadData.next([message["channel"],message["angle"]]);
+            else if (message["action"] == "load")
+                scope.ReadLoadData.next([message["channel"], message["angle"]]);
             else
                 console.log(message);
         };
         const closeMessage = () => {
             console.log("closeMessage");
-          };
+        };
 
         this._socket = new WebSocket(url) as WebSocket;
         this._socket.addEventListener("message", handleMessage);
@@ -95,79 +89,82 @@ export class PLENControlServerService
         this._socket.addEventListener("error", closeMessage);
     }
 
-    sendmsg(dt):void{
+    sendmsg(dt): void {
         this._socket.send(JSON.stringify(dt));
     }
 
-    sendAngle(name,angle):void{
+    sendAngle(name, angle): void {
         this._socket.send('{"action":"move","name":"' + name + '","angle":"' + angle + '"}');
     }
 
-    addStep(channel,angle):void{
-        this.sendmsg({ "action":"set","angle": angle, "channel": channel });
+    addStep(channel, angle): void {
+        this.sendmsg({ "action": "set", "angle": angle, "channel": channel });
     }
 
-    saveAngle(channel,angle):void{
-        this.sendmsg({ "action":"save","angle": angle, "channel": channel });
+    saveAngle(channel, angle): void {
+        this.sendmsg({ "action": "save", "angle": angle, "channel": channel });
     }
 
-    load0(channel):void{
-        this.sendmsg({ "action":"load", "channel": channel,"angle": -1 });
+    load0(channel): void {
+        this.sendmsg({ "action": "load", "channel": channel, "angle": -1 });
     }
 
-    Run(filename):void{
-        this.sendmsg({ "action":"runAction", "filename": filename });
+    Run(filename): void {
+        this.sendmsg({ "action": "runAction", "filename": filename });
     }
 
-    Stand():void{
-        this.sendmsg({ "action":"Reset" });
+    StopAction(): void {
+        this.sendmsg({ "action": "StopAction" });
     }
 
-    writeZero():void{
-        this.sendmsg({ "action":"writeZero" });
+    Stand(): void {
+        this.sendmsg({ "action": "Reset" });
     }
 
-    getList(callback):void{
+    writeZero(): void {
+        this.sendmsg({ "action": "writeZero" });
+    }
+
+    getList(callback): void {
         $.ajax({
-            url:"./api/motion_list",
-            success:(data)=>{
+            url: "./api/motion_list",
+            success: (data) => {
                 callback(data);
             },
-            error:(error) => {
-                alert("Loading a 3D model failed. (Please refresh this page.)"+error);
+            error: (error) => {
+                alert("Loading a 3D model failed. (Please refresh this page.)" + error);
             }
         })
     }
 
-    openfile(filename,callback):void{
+    openfile(filename, callback): void {
         $.ajax({
-            url:"./api/motiondetail?filename=" + filename,            
-            success:(data)=>{
+            url: "./api/motiondetail?filename=" + filename,
+            success: (data) => {
                 callback(data);
             },
-            error:(error) => {
-                alert("Loading a 3D model failed. (Please refresh this page.)"+error);
+            error: (error) => {
+                alert("Loading a 3D model failed. (Please refresh this page.)" + error);
             }
         })
     }
 
-    savefile(filename,body,callback):void{
+    savefile(filename, body, callback): void {
         $.ajax({
-            type:"post",
-            url:"./api/savemotiondetail?filename=" + filename,   
-            data:body,
-            success:(data)=>{
+            type: "post",
+            url: "./api/savemotiondetail?filename=" + filename,
+            data: body,
+            success: (data) => {
                 callback(data);
             },
-            error:(error) => {
-                alert("save model error"+JSON.stringify(error));
+            error: (error) => {
+                alert("save model error" + JSON.stringify(error));
             }
         })
     }
 
 
-    checkServerVersion(): void
-    {
+    checkServerVersion(): void {
         // this._$http.get("//" + this._ip_addr + "/connect")
         //     .success(() =>
         //     {
@@ -179,8 +176,7 @@ export class PLENControlServerService
         //     });
     }
 
-    connect(success_callback = null): void
-    {
+    connect(success_callback = null): void {
         // if (this._state === SERVER_STATE.DISCONNECTED)
         // {
         //     var modal = this._$modal.open({
@@ -225,8 +221,7 @@ export class PLENControlServerService
         // }
     }
 
-    disconnect(success_callback = null): void
-    {
+    disconnect(success_callback = null): void {
         // if (this._state === SERVER_STATE.CONNECTED)
         // {
         //     this._state = SERVER_STATE.WAITING;
@@ -252,8 +247,7 @@ export class PLENControlServerService
         // }
     }
 
-    install(json, success_callback = null): void
-    {
+    install(json, success_callback = null): void {
         // if (this._state === SERVER_STATE.CONNECTED)
         // {
         //     this._state = SERVER_STATE.WAITING;
@@ -290,8 +284,7 @@ export class PLENControlServerService
         // }
     }
 
-    play(slot: number, success_callback = null): void
-    {
+    play(slot: number, success_callback = null): void {
         // if (this._state === SERVER_STATE.CONNECTED)
         // {
         //     this._state = SERVER_STATE.WAITING;
@@ -324,8 +317,7 @@ export class PLENControlServerService
         // }
     }
 
-    stop(success_callback = null): void
-    {
+    stop(success_callback = null): void {
         // if (this._state === SERVER_STATE.CONNECTED)
         // {
         //     this._state = SERVER_STATE.WAITING;
@@ -358,8 +350,7 @@ export class PLENControlServerService
         // }
     }
 
-    getStatus(): SERVER_STATE
-    {
+    getStatus(): SERVER_STATE {
         return this._state;
     }
 
@@ -398,8 +389,7 @@ export class PLENControlServerService
         //     });
     }
 
-    onSyncBegin(): void
-    {
+    onSyncBegin(): void {
         // if (!_.isNull(this._socket))
         // {
         //     this._socket.close();
@@ -457,8 +447,7 @@ export class PLENControlServerService
         // };
     }
 
-    onSyncEnd(): void
-    {
+    onSyncEnd(): void {
         // this._socket.close();
         // this._socket = null;
 

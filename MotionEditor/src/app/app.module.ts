@@ -13,8 +13,6 @@ import { ModelEditorController } from './components/ModelEditor/controller';
 import { NewButtonController } from './components/NewButton/controller';
 import { DiffAngleViewerController } from './components/DiffAngleViewer/controller';
 import { FrameEditorController } from './components/FrameEditor/controller';
-import { EditPropertiesButtonController } from './components/EditPropertiesButton/controller';
-import { SyncButtonController } from './components/SyncButton/controller';
 import { PlayPauseButtonController } from './components/PlayPauseButton/controller';
 import { PreviousButtonController } from './components/PreviousButton/controller';
 import { NextButtonController } from './components/NextButton/controller';
@@ -28,9 +26,9 @@ import {MotionModel} from './business_logic/MotionModel';
 import {ModelLoader} from './business_logic/ModelLoader';
 import {ThreeModel} from './business_logic/ThreeModel';
 import {AnimationHelper} from './business_logic/AnimationHelper';
-import {Gscope} from './services/Gscope';
+import {Gscope} from './business_logic/Gscope';
 import {IntervalService} from './business_logic/IntervalService';
-import {PLENControlServerService} from './services/PLENControlServerService';
+import {PLENControlServerService} from './business_logic/PLENControlServerService';
 
 
 // The application module's namespace definition.
@@ -47,8 +45,6 @@ var APP_NAME = "MotionEditor";
     NewButtonController,
     DiffAngleViewerController,
     FrameEditorController,
-    EditPropertiesButtonController,
-    SyncButtonController,
     PlayPauseButtonController,
     PreviousButtonController,
     NextButtonController,

@@ -2,7 +2,6 @@
     <img src="./assets/img/{{logurl}}" width="128" height="160" alt="logo">
 </div>
 
-
 <div class="dlg-model-back" style="display: {{showmodel?'block':'none'}}">
 </div>
 
@@ -21,17 +20,17 @@
             端口：<input id="channel" [(ngModel)]="currentsel" />
             <p id="info">{{angle}}</p>
             <div id="helmContainer">
-                <input type="range" id="angle" min="-800" max="800" id="hpro" style="width:400px" 
-                [(ngModel)]="angle" (change)="rangechg()"/>
+                <input type="range" id="angle" min="-800" max="800" id="hpro" style="width:400px" [(ngModel)]="angle"
+                    (change)="rangechg()" />
             </div>
             <div class="ctrl-row">
                 <input type="button" value="+" style="width:50px;height:30px" (click)="addStep(1)" />
                 &nbsp;
-                <input type="button" value="-" style="width:50px;height:30px"  (click)="addStep(-1)"  />
+                <input type="button" value="-" style="width:50px;height:30px" (click)="addStep(-1)" />
             </div>
             <div class="ctrl-row">
-                <input type="button" value="++" style="width:50px;height:30px"  (click)="addStep(10)" />&nbsp;
-                <input type="button" value="--" style="width:50px;height:30px"  (click)="addStep(-10)" />
+                <input type="button" value="++" style="width:50px;height:30px" (click)="addStep(10)" />&nbsp;
+                <input type="button" value="--" style="width:50px;height:30px" (click)="addStep(-10)" />
             </div>
             <div class="ctrl-row">
                 <input type="button" value="归位" style="width:50px;height:30px" onclick="load()" />&nbsp;

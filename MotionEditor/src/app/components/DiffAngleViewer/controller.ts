@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { ThreeModel } from '../../business_logic/ThreeModel';
-import { Gscope } from '../../services/Gscope';
+import { Gscope } from '../../business_logic/Gscope';
 
 @Component({
     selector: 'diff-angle-viewer',
@@ -10,8 +10,7 @@ import { Gscope } from '../../services/Gscope';
 export class DiffAngleViewerController implements OnInit {
     name: string | undefined = "none";
     diff_angle: number = 0;
-
-    visible:boolean = false;
+    visible: boolean = false;
 
     constructor(
         public scope: Gscope,

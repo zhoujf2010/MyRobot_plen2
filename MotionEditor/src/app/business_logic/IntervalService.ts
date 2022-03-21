@@ -1,10 +1,8 @@
-
 import { Injectable } from '@angular/core';
 import { IPromise } from 'angular';
-import { Subject } from 'rxjs';
 
 
-class MyPromise{// implements ng.IPromise<any>{
+class MyPromise {// implements ng.IPromise<any>{
 
     // then<TResult1 = any, TResult2 = never>(successCallback?: ((value: any) => TResult1 | PromiseLike<never> | PromiseLike<TResult1>) | null, errorCallback?: ((reason: any) => TResult2 | PromiseLike<never> | PromiseLike<TResult2>) | null, notifyCallback?: (state: any) => any): IPromise<TResult1 | TResult2>;
 
@@ -23,52 +21,48 @@ class MyPromise{// implements ng.IPromise<any>{
         this._finallyCallback = finallyCallback;
     }
 
-    then(fun:Function ):void {
+    then(fun: Function): void {
         this._fun = fun;
         fun();
     }
 
 
-    private _fun:Function;
-    private _finallyCallback:() => void;
-    public isRun:boolean;
+    private _fun: Function;
+    private _finallyCallback: () => void;
+    public isRun: boolean;
 
-    doLoop(timeout,count,obj){
-        if (count ==0){
+    doLoop(timeout, count, obj) {
+        if (count == 0) {
             obj._finallyCallback();
             return;
         }
-        if (!obj.isRun){
+        if (!obj.isRun) {
             // obj._finallyCallback();
-            return ; //终止
+            return; //终止
         }
         obj._fun();
 
-        setTimeout(obj.doLoop, timeout,timeout,count-1,obj);
+        setTimeout(obj.doLoop, timeout, timeout, count - 1, obj);
     }
 }
 
 @Injectable({
     providedIn: 'root',
 })
-export class IntervalService{// implements ng.IIntervalService{
-
-
+export class IntervalService {// implements ng.IIntervalService{
 
     create(func: Function, delay: number, count?: number, invokeApply?: boolean, ...args: any[]):
-     MyPromise{
+        MyPromise {
         var pm = new MyPromise();
         pm.then(func);
         pm.isRun = true;
-        pm.doLoop(delay,count,pm);
+        pm.doLoop(delay, count, pm);
 
         return pm;
     }
 
-
-
-    cancel(promise: MyPromise){
+    cancel(promise: MyPromise) {
         promise.isRun = false;
     }
-    
+
 }

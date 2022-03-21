@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { ThreeModel } from '../../business_logic/ThreeModel';
-import { Gscope } from '../../services/Gscope';
+import { Gscope } from '../../business_logic/Gscope';
 
 @Component({
     selector: 'changeAngle-viewer',
@@ -10,8 +10,8 @@ import { Gscope } from '../../services/Gscope';
 export class ChangeAngleController implements OnInit {
     name: string | undefined = "none";
     diff_angle: number = 0;
-    angle:number = 0;
-    visible:boolean = false;
+    angle: number = 0;
+    visible: boolean = false;
 
     constructor(
         public scope: Gscope,
@@ -31,17 +31,17 @@ export class ChangeAngleController implements OnInit {
         this.visible = this.name != "" && this.name != "none" && this.name != undefined;
     }
 
-    rangechg():void{
+    rangechg(): void {
 
         this.diff_angle = this.angle / 800 * 180;
-        this.three_model.setDiffAngle(this.three_model.transform_controls.object,this.diff_angle * 10);
-        
+        this.three_model.setDiffAngle(this.three_model.transform_controls.object, this.diff_angle * 10);
+
         this.scope.SaveFrame.next(0);
         this.scope.angleChange.next(0);
     }
 
-    onAddAngle(def:number):void{
+    onAddAngle(def: number): void {
         this.angle += def;
-        this.rangechg();   
+        this.rangechg();
     }
 }

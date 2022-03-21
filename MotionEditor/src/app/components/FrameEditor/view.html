@@ -1,25 +1,21 @@
-﻿<div id="frame_editor" ui-sortable="$ctrl.sortable_options" (click)="onClick($event)"   >
-    <div class="frame"
-    *ngFor="let frame of motion.frames;let i = index"
-    class="{{frame.selected? 'frame-selected':'' }}"
-    (mousedown) = 'motion.selectFrame(i)'
-    style="background:url(' {{ frame.image_uri}}')">
+﻿<div id="frame_editor" ui-sortable="$ctrl.sortable_options" (click)="onClick($event)">
+    <div class="frame" *ngFor="let frame of motion.frames;let i = index"
+        class="{{frame.selected? 'frame-selected':'' }}" (mousedown)='motion.selectFrame(i)'
+        style="background:url(' {{ frame.image_uri}}')">
 
-    <div class="frame-property">
-        <span class="frame-id">Frame : {{ i }}</span>
-        <button class="button-close" type="button"
-        (mousedown)="$event.stopPropagation(); motion.removeFrame(i);"
-            title="Delete this frame."  >
-            <i class="fa fa-inverse fa-times-circle-o"></i>
-        </button>
-    </div>
-    <div class="input-transition_time" title="Set time of transition to this frame.">
-        <div>Transition time :</div>
-        <input type="number" min="1" max="5000" [disabled]="touch_disabled"  [(ngModel)]="frame.transition_time_ms"> [ms]
-        <input type="range" min="1" max="5000" step="1" [(ngModel)]="frame.transition_time_ms">
-    </div>
-
-    
+        <div class="frame-property">
+            <span class="frame-id">Frame : {{ i }}</span>
+            <button class="button-close" type="button" (mousedown)="$event.stopPropagation(); motion.removeFrame(i);"
+                title="Delete this frame.">
+                <i class="fa fa-inverse fa-times-circle-o"></i>
+            </button>
+        </div>
+        <div class="input-transition_time" title="Set time of transition to this frame.">
+            <div>Transition time :</div>
+            <input type="number" min="1" max="5000" [disabled]="touch_disabled" [(ngModel)]="frame.transition_time_ms">
+            [ms]
+            <input type="range" min="1" max="5000" step="1" [(ngModel)]="frame.transition_time_ms">
+        </div>
     </div>
 </div>
 <div class="{{disabled? 'frame_editor-disabled':'frame_editor-enabled' }}"></div>

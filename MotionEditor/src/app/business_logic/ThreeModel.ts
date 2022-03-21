@@ -3,31 +3,13 @@ import * as THREE from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 
-import {Gscope} from '../services/Gscope';
-import * as _ from 'lodash'; 
-import { MOUSE } from 'three';
-import { json } from 'stream/consumers';
-
-// @todo Divide into isolated *.d.ts.
-// declare module THREE
-// {
-//     class TransformControls
-//     {
-//         constructor(object: Camera, domElement?: HTMLElement);
-
-//         setSpace(__: string): void;
-//         setMode(__: string): void;
-//         $onPointerDown(__: any): void;
-
-//         object: Object3D;
-//     }
-// }
+import { Gscope } from './Gscope';
+import * as _ from 'lodash';
 
 @Injectable({
     providedIn: 'root',
 })
-export class ThreeModel
-{
+export class ThreeModel {
     layout: any;
 
     scene: THREE.Scene;
@@ -43,18 +25,15 @@ export class ThreeModel
     orbit_controls: OrbitControls;
     transform_controls: TransformControls;
 
-    ray:THREE.Raycaster;
+    ray: THREE.Raycaster;
 
     constructor(
-        public scope: Gscope)
-    {
-        // noop.
+        public scope: Gscope) {
     }
 
-    init($element: any, layout: any): void
-    {
+    init($element: any, layout: any): void {
         this.layout = layout;
-        var width  = this.layout.width();
+        var width = this.layout.width();
         var height = this.layout.height();
 
         this.scene = new THREE.Scene();
@@ -63,7 +42,7 @@ export class ThreeModel
         this.camera.up.set(0, 1, 0);
         this.camera.position.set(200, 200, 500);
 
-        this.grid = new THREE.GridHelper(1000, 10,0xB2DB11, 0xFFFFFF);
+        this.grid = new THREE.GridHelper(1000, 10, 0xB2DB11, 0xFFFFFF);
         this.grid.position.set(0, 0, 0);
         this.scene.add(this.grid);
 
@@ -84,30 +63,23 @@ export class ThreeModel
         this.transform_controls.setSpace("local");
         this.transform_controls.setMode("rotate");
         this.scene.add(this.transform_controls);
-        this.transform_controls.addEventListener("objectChange",()=>{
+        this.transform_controls.addEventListener("objectChange", () => {
             this.scope.angleChange.next(0);
         })
-
-        // this.ray = new THREE.Raycaster();
-        // this.scene.add(new THREE.ArrowHelper(this.ray.ray.direction, this.ray.ray.origin, 300, 0xff0000) );
-
 
         $element.append(this.renderer.domElement);
 
         this.renderer.render(this.scene, this.camera);
     }
 
-    reset(): void
-    {
-        _.each(this.rotation_axes, (axis: THREE.Object3D, index: number) =>
-        {
+    reset(): void {
+        _.each(this.rotation_axes, (axis: THREE.Object3D, index: number) => {
             axis.quaternion.copy(this.home_quaternions[index]);
         });
     }
 
-    resize(): void
-    {
-        var width  = this.layout.width();
+    resize(): void {
+        var width = this.layout.width();
         var height = this.layout.height();
 
         this.camera.aspect = width / height;
@@ -116,22 +88,20 @@ export class ThreeModel
         this.renderer.setSize(width, height);
     }
 
-    animate(): void
-    {
+    animate(): void {
         this.refresh();
 
         requestAnimationFrame(() => { this.animate(); });
     }
 
-    refresh(): void
-    {
+    refresh(): void {
         this.orbit_controls.update();
         // this.transform_controls.update();
 
-        var theta  = Math.atan2(this.camera.position.x, this.camera.position.z);
-        var phi    = Math.atan2(Math.sqrt(this.camera.position.x * this.camera.position.x + this.camera.position.z * this.camera.position.z), this.camera.position.y);
+        var theta = Math.atan2(this.camera.position.x, this.camera.position.z);
+        var phi = Math.atan2(Math.sqrt(this.camera.position.x * this.camera.position.x + this.camera.position.z * this.camera.position.z), this.camera.position.y);
         var radius = Math.sqrt(3) * 1000;
-        
+
         this.light.position.x = radius * Math.sin(phi) * Math.sin(theta);
         this.light.position.y = radius * Math.cos(phi);
         this.light.position.z = radius * Math.sin(phi) * Math.cos(theta);
@@ -139,8 +109,7 @@ export class ThreeModel
         this.renderer.render(this.scene, this.camera);
     }
 
-    intersect(screen_x: number, screen_y: number): boolean
-    {
+    intersect(screen_x: number, screen_y: number): boolean {
         var rect = this.renderer.domElement.getBoundingClientRect();
         var x = (screen_x - rect.left) / rect.width;
         var y = (screen_y - rect.top) / rect.height;
@@ -148,37 +117,33 @@ export class ThreeModel
         //计算当前点击的部件
         var pointer_vector = new THREE.Vector3((x * 2) - 1, -(y * 2) + 1, 0.5);
         var ray = new THREE.Raycaster();
-        ray.setFromCamera(pointer_vector,this.camera);
+        ray.setFromCamera(pointer_vector, this.camera);
 
         var intersections = ray.intersectObjects(this.not_axes, true);
         var result: boolean = false;
 
-        if (intersections.length > 0)
-        {
-            _.each(this.rotation_axes, (axis: THREE.Object3D) =>
-            {
-                if (axis === intersections[0].object.parent)
-                {
+        if (intersections.length > 0) {
+            _.each(this.rotation_axes, (axis: THREE.Object3D) => {
+                if (axis === intersections[0].object.parent) {
                     this.transform_controls.attach(axis);
                     this.transform_controls.setMode("rotate");
 
                     this.transform_controls.showX = false;
                     this.transform_controls.showY = true;
                     this.transform_controls.showZ = false;
-                    this.transform_controls.axis ="Y";
+                    this.transform_controls.axis = "Y";
 
                     this.orbit_controls.enabled = false;
                     result = true;
                     this.scope.angleChange.next(0);
                     return false;
                 }
-                else
-                {
+                else {
                     this.orbit_controls.enabled = true;
                     return true;
                 }
             });
-        }else{
+        } else {
             this.transform_controls.detach();
             this.orbit_controls.enabled = true;
             this.scope.angleChange.next(0);
@@ -187,12 +152,10 @@ export class ThreeModel
         return result;
     }
 
-    reverse3DModel(): void
-    {
+    reverse3DModel(): void {
         var length_half = this.rotation_axes.length / 2;
 
-        for (var index = 0; index < length_half; index++)
-        {
+        for (var index = 0; index < length_half; index++) {
             var angle_diff_rhs = this.getDiffAngle(this.rotation_axes[index], index);
             var angle_diff_lhs = this.getDiffAngle(this.rotation_axes[length_half + index], length_half + index);
 
@@ -201,38 +164,30 @@ export class ThreeModel
         }
     }
 
-    copyRightToLeft(): void
-    {
+    copyRightToLeft(): void {
         var length_half = this.rotation_axes.length / 2;
 
-        for (var index = 0; index < length_half; index++)
-        {
+        for (var index = 0; index < length_half; index++) {
             var angle_diff_rhs = this.getDiffAngle(this.rotation_axes[index], index);
             this.setDiffAngle(this.rotation_axes[length_half + index], -angle_diff_rhs, length_half + index);
         }
     }
 
-    copyLeftToRight(): void
-    {
+    copyLeftToRight(): void {
         var length_half = this.rotation_axes.length / 2;
 
-        for (var index = 0; index < length_half; index++)
-        {
+        for (var index = 0; index < length_half; index++) {
             var angle_diff_lhs = this.getDiffAngle(this.rotation_axes[length_half + index], length_half + index);
             this.setDiffAngle(this.rotation_axes[index], -angle_diff_lhs, index);
         }
     }
 
-    getDiffAngle(axis_object: THREE.Object3D | undefined, index: number = -1): any
-    {
+    getDiffAngle(axis_object: THREE.Object3D | undefined, index: number = -1): any {
         var angle_diff = 0;
 
-        if (!_.isUndefined(axis_object))
-        {
-            if (index == -1)
-            {
-                index = _.findIndex(this.rotation_axes, (axis: THREE.Object3D) =>
-                {
+        if (!_.isUndefined(axis_object)) {
+            if (index == -1) {
+                index = _.findIndex(this.rotation_axes, (axis: THREE.Object3D) => {
                     return axis === axis_object;
                 });
             }
@@ -243,17 +198,14 @@ export class ThreeModel
 
             var theta_half_diff = Math.atan2(target_quaternion.y, target_quaternion.w);
 
-            if (Math.abs(theta_half_diff * 2) > Math.PI)
-            {
+            if (Math.abs(theta_half_diff * 2) > Math.PI) {
                 var theta_diff = 2 * Math.PI - Math.abs(theta_half_diff * 2);
 
-                if (theta_half_diff > 0)
-                {
+                if (theta_half_diff > 0) {
                     theta_diff *= -1;
                 }
             }
-            else
-            {
+            else {
                 var theta_diff = theta_half_diff * 2;
             }
 
@@ -263,14 +215,11 @@ export class ThreeModel
         return angle_diff;
     }
 
-    setDiffAngle(axis_object: THREE.Object3D | undefined, angle_diff: number, index: number = -1): void
-    {
+    setDiffAngle(axis_object: THREE.Object3D | undefined, angle_diff: number, index: number = -1): void {
         var theta_diff = angle_diff * Math.PI / 1800;
 
-        if (index ==-1)
-        {
-            index = _.findIndex(this.rotation_axes, (axis: THREE.Object3D) =>
-            {
+        if (index == -1) {
+            index = _.findIndex(this.rotation_axes, (axis: THREE.Object3D) => {
                 return axis === axis_object;
             });
         }

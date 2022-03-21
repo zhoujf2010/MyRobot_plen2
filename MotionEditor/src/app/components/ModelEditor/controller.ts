@@ -1,21 +1,14 @@
-﻿/// <reference path="../../services/SharedThreeService.ts" />
-/// <reference path="../../services/SharedMotionService.ts" />
-/// <reference path="../../services/ImageStoreService.ts" />
-
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { ThreeModel } from '../../business_logic/ThreeModel';
 import { ModelLoader } from '../../business_logic/ModelLoader';
 import { FrameModel } from '../../business_logic/FrameModel';
 import { MotionModel } from '../../business_logic/MotionModel';
-import { ImageStoreService } from '../../services/ImageStoreService';
-import { Gscope } from '../../services/Gscope';
-
+import { ImageStoreService } from '../../business_logic/ImageStoreService';
+import { Gscope } from '../../business_logic/Gscope';
 import { OutputDeviceModel } from "../../business_logic/OutputDeviceModel";
-
 import * as _ from 'lodash';
 import * as $ from 'jquery';
 import { Object3D } from 'three';
-
 
 @Component({
     selector: 'model-editor',
@@ -54,7 +47,7 @@ export class ModelEditorController implements OnInit {
         scope.RefreshThumbnail.subscribe((item) => { this.onRefreshThumbnail(); });
         scope.FrameSave.subscribe((item) => { this.onFrameSave(item); });
         scope.FrameLoad.subscribe((item) => { this.onFrameLoad(item); });
-        scope.SaveFrame.subscribe((item)=>{this.setImage();});
+        scope.SaveFrame.subscribe((item) => { this.setImage(); });
 
         this.layout = {
             width: () => {
@@ -73,7 +66,6 @@ export class ModelEditorController implements OnInit {
 
     }
     ngOnInit(): void {
-        // $('#canvas_wrapper').text("Hello");
         this.three_model.init($('#canvas_wrapper'), this.layout);
         this.three_model.animate();
 
@@ -85,9 +77,7 @@ export class ModelEditorController implements OnInit {
         // The hook when pointer is unfocused.
         $('#canvas_wrapper canvas').on('mouseup mouseout touchend touchcancel touchleave', () => {
             this.onUnfocus();
-            //    $scope.$apply();
         });
-
 
         this.model_loader.scene = this.three_model.scene;
         this.model_loader.loadJSON();
@@ -152,7 +142,6 @@ export class ModelEditorController implements OnInit {
         if (this.disabled) {
             return;
         }
-        // console.info($event.clientX + " == " + $event.clientY);
 
         if (!_.isUndefined($event.touches)) {
             if ($event.touches.length === 1) {
