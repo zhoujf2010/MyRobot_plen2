@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+import { Title } from '@angular/platform-browser';
 
 
 @Component({
@@ -10,8 +11,11 @@ import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 export class AppComponent {
   title = 'MotionEditor';
 
-  constructor(private modalService: NgbModal) {}
+  constructor(private modalService: NgbModal,private titleService: Title) {}
     
+  public setTitle(newTitle: string) {
+    this.titleService.setTitle(newTitle);
+  }
 
    /**
    * Write code on Method

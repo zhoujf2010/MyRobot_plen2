@@ -97,7 +97,10 @@ class BaseView: #HomeAssistantView
                 if dd is not None:
                     handler = request_handler_factory(self, handler)
                     for method in dd["methods"]:
-                        routes.append(router.add_route(method, app.appName + dd["rule"], handler))
+                        url = dd["rule"]
+                        if app.appName !="/":
+                            url = app.appName + url
+                        routes.append(router.add_route(method, url, handler))
         else:
 
             assert self.url is not None, "No url set for view"

@@ -169,6 +169,7 @@ export class ThreeModel
 
                     this.orbit_controls.enabled = false;
                     result = true;
+                    this.scope.angleChange.next(0);
                     return false;
                 }
                 else
@@ -180,6 +181,7 @@ export class ThreeModel
         }else{
             this.transform_controls.detach();
             this.orbit_controls.enabled = true;
+            this.scope.angleChange.next(0);
         }
 
         return result;
@@ -261,11 +263,11 @@ export class ThreeModel
         return angle_diff;
     }
 
-    setDiffAngle(axis_object: THREE.Object3D, angle_diff: number, index: number = 0): void
+    setDiffAngle(axis_object: THREE.Object3D | undefined, angle_diff: number, index: number = -1): void
     {
         var theta_diff = angle_diff * Math.PI / 1800;
 
-        if (_.isNull(index))
+        if (index ==-1)
         {
             index = _.findIndex(this.rotation_axes, (axis: THREE.Object3D) =>
             {

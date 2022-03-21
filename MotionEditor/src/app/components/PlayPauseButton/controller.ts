@@ -5,6 +5,7 @@ import {FrameModel} from '../../business_logic/FrameModel';
 import {MotionModel} from '../../business_logic/MotionModel';
 import {ImageStoreService} from '../../services/ImageStoreService';
 import {Gscope} from '../../services/Gscope';
+import { PLENControlServerService } from '../../services/PLENControlServerService';
 
 import * as _ from 'lodash'; 
 import * as $ from 'jquery';
@@ -31,7 +32,7 @@ import { Object3D } from 'three';
 
     constructor(
         public scope: Gscope,
-        // public plen_controll_server_service: PLENControlServerService,
+        public plen_controll_server_service: PLENControlServerService,
         public motion: MotionModel
     )
     {
@@ -42,6 +43,13 @@ import { Object3D } from 'three';
 
     onClick(): void
     {
+        
+        this.plen_controll_server_service.savefile("tmp.json",this.motion.saveJSON(),(data)=>{
+            
+            this.plen_controll_server_service.Run("tmp.json");
+
+        });
+
         if (this.playing === false)
         {
             // if (this.plen_controll_server_service.getStatus() === SERVER_STATE.CONNECTED)

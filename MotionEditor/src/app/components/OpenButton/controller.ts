@@ -7,17 +7,20 @@ import {MotionModel} from '../../business_logic/MotionModel';
 import {ModelLoader} from '../../business_logic/ModelLoader';
 // import {EventService} from '../../services/EventService';
 import {Gscope} from '../../services/Gscope';
+import { PLENControlServerService } from '../../services/PLENControlServerService';
 
 import * as $ from 'jquery';
 
 @Component({
     selector: 'open-button',
     templateUrl: './view.html',
-    styleUrls: []
+    styleUrls: ["./style.css"]
   })
 export class OpenButtonController
 {
     disabled: boolean = false;
+    showmodel:boolean = false;
+    filelst:any;
 
     static $inject = [
         "$scope",
@@ -27,7 +30,8 @@ export class OpenButtonController
     constructor(
         public scope: Gscope,
         public motion: MotionModel,
-        public model_loader: ModelLoader 
+        public model_loader: ModelLoader ,
+        public plen_controll_server_service: PLENControlServerService
     )
     {
         scope.ComponentDisabled.subscribe((item)=>{this.disabled = true; });
@@ -42,5 +46,27 @@ export class OpenButtonController
         };
 
         reader.readAsText(event.target.files[0]);
+    }
+
+    onClick():void{
+        this.showmodel = true;
+
+        this.plen_controll_server_service.getList((data)=>{
+            this.filelst = data;
+                // alert(JSON.stringify(data));
+        });
+    }
+
+    closeModel():void{
+        this.showmodel = false;
+    }
+
+    openfile(file):void{
+        this.plen_controll_server_service.openfile(file.value,(data)=>{
+            this.showmodel = false;
+
+            this.motion.loadJSON(JSON.stringify(data), this.model_loader.getAxisMap());
+            this.motion.name = file.value.replace(".json","").replace(".JSON","");
+        });
     }
 } 

@@ -11,6 +11,8 @@ import {ThreeModel} from "../business_logic/ThreeModel";
 
 import {Gscope} from './Gscope';
 import { Injectable } from '@angular/core';
+import * as $ from 'jquery';
+import { post } from "jquery";
 
 @Injectable({
     providedIn: 'root',
@@ -123,6 +125,44 @@ export class PLENControlServerService
 
     writeZero():void{
         this.sendmsg({ "action":"writeZero" });
+    }
+
+    getList(callback):void{
+        $.ajax({
+            url:"./api/motion_list",
+            success:(data)=>{
+                callback(data);
+            },
+            error:(error) => {
+                alert("Loading a 3D model failed. (Please refresh this page.)"+error);
+            }
+        })
+    }
+
+    openfile(filename,callback):void{
+        $.ajax({
+            url:"./api/motiondetail?filename=" + filename,            
+            success:(data)=>{
+                callback(data);
+            },
+            error:(error) => {
+                alert("Loading a 3D model failed. (Please refresh this page.)"+error);
+            }
+        })
+    }
+
+    savefile(filename,body,callback):void{
+        $.ajax({
+            type:"post",
+            url:"./api/savemotiondetail?filename=" + filename,   
+            data:body,
+            success:(data)=>{
+                callback(data);
+            },
+            error:(error) => {
+                alert("save model error"+JSON.stringify(error));
+            }
+        })
     }
 
 

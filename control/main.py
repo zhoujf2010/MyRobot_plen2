@@ -21,6 +21,7 @@ from webFrame.eventBus import EventBus
 from webFrame.websocketView import WebsocketAPIView
 from Robot import Robot
 import signal
+from motion import Motion
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -102,6 +103,7 @@ async def main():
     await RobotBridge(app)
     app.robot = Robot(app)
 
+    app.register_view(Motion(app))
     app.register_view(WebsocketAPIView(app, commonHandle))
     # 注册静态资源
     for path in ["js", "css", "img", "static","angularjs","Scripts","lib","assets"]:

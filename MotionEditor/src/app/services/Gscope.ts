@@ -35,4 +35,7 @@ export class Gscope
     RobotDisConnected = new Subject<any>();
 
     ReadLoadData = new Subject<any>();
+
+    
+    SaveFrame =   new Subject<any>();
 }

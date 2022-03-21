@@ -24,6 +24,7 @@ export class MotionModel
 
     slot: number = 44;
     name: string = "Empty";
+    filename:string="";
     codes: Array<CodeModel>   = [];
     frames: Array<FrameModel> = [];
 

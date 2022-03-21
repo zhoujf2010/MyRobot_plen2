@@ -1,6 +1,7 @@
 ﻿///// <reference path="../../services/SharedMotionService.ts" />
 import { Component, OnInit } from '@angular/core';
 import {MotionModel} from '../../business_logic/MotionModel';
+import { PLENControlServerService } from '../../services/PLENControlServerService';
 
 @Component({
     selector: 'save-button',
@@ -22,7 +23,8 @@ import {MotionModel} from '../../business_logic/MotionModel';
         // public $rootScope: ng.IRootScopeService,
         // $scope: ng.IScope,
         // public $element,
-        public motion: MotionModel
+        public motion: MotionModel,
+        public plen_controll_server_service: PLENControlServerService
     )
     {
         // $scope.$on("ComponentDisabled", () => { this.disabled = true; });
@@ -33,11 +35,16 @@ import {MotionModel} from '../../business_logic/MotionModel';
 
     onClick(): void
     {
-        if (!this.disabled)
-        {
-            // this.$rootScope.$broadcast("FrameSave", this.motion.getSelectedFrameIndex());
-            this.setDownloadLink();
-        }
+        // if (!this.disabled)
+        // {
+        //     // this.$rootScope.$broadcast("FrameSave", this.motion.getSelectedFrameIndex());
+        //     this.setDownloadLink();
+        // }
+
+        this.plen_controll_server_service.savefile(this.motion.name + ".json",this.motion.saveJSON(),(data)=>{
+            alert(JSON.stringify(data));
+        });
+
     }
 
     setDownloadLink(): void

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; 
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
@@ -19,6 +19,7 @@ import { PlayPauseButtonController } from './components/PlayPauseButton/controll
 import { PreviousButtonController } from './components/PreviousButton/controller';
 import { NextButtonController } from './components/NextButton/controller';
 import { LogoController } from './components/Logo/controller';
+import { ChangeAngleController } from './components/ChangeAngleViewer/controller';
 
 
 import * as $ from 'jquery';
@@ -51,7 +52,8 @@ var APP_NAME = "MotionEditor";
     PlayPauseButtonController,
     PreviousButtonController,
     NextButtonController,
-    LogoController
+    LogoController,
+    ChangeAngleController
   ],
   imports: [
     BrowserModule,FormsModule,NgbModule
@@ -62,7 +64,8 @@ var APP_NAME = "MotionEditor";
     Gscope,
     AnimationHelper,
     IntervalService,
-    PLENControlServerService
+    PLENControlServerService,
+    Title
   ],
   bootstrap: [AppComponent]
 })

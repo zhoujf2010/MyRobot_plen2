@@ -2,3 +2,4 @@
 .vscode
 /control/__pycache__
 /control/webpage
+/control/motions/tmp.json

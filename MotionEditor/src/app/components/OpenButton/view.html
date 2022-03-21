@@ -1,6 +1,24 @@
 ﻿<div class="button-open">
-    <button class="button-menu" type="button">
+    <button class="button-menu" type="button" (click)="onClick()">
         <i class="fa fa-fw fa-folder-open fa-4x"></i>
     </button>
-    <input type="file" ng-disabled="$ctrl.disabled" (change)="onchange($event)" class="input-motion" accept=".json" title="Open a motion.">
+</div>
+
+
+<div class="dlg-model-back" style="display: {{showmodel?'block':'none'}}">
+</div>
+
+<div class="dlg-model" style="width:250px;height:450px;left:534px;top:164px;display: {{showmodel?'block':'none'}}">
+    <div class="modal-header" style="height:36px">
+        <div class="modal-title" style="float:left;width:150px;height:36px">选择文件</div>
+        <button type="button" class="close" aria-label="Close" (click)="closeModel()">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <select name="list" size="23" (dblclick)="openfile($event.target)">
+            <option *ngFor="let filename of filelst;" [value]="filename"> {{ filename }} </option>
+        </select>
+    </div>
+
 </div>
