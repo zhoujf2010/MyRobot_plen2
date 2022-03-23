@@ -1,5 +1,5 @@
 ﻿<div id="logo" (click)="onClick()" style="cursor:pointer;">
-    <img src="./assets/img/{{logurl}}" width="128" height="160" alt="logo">
+    <img src="./assets/img/{{logurl}}" width="128" height="160" alt="logo" >
 </div>
 
 <div class="dlg-model-back" style="display: {{showmodel?'block':'none'}}">
@@ -14,28 +14,34 @@
     </div>
     <div class="modal-body">
         <div class="left-site">
-            <img src="./assets/img/robot.png" style="width:248px;height:400px" />
+            <img src="./assets/img/robot.png" style="width:248px;height:400px" usemap="#ancher" />
+            <map name="ancher" id="ancher">
+        
+            <area shape="circle" coords="30,40,35" onclick="alert(1)"><area>
+        </map>
         </div>
         <div class="right-site">
             端口：<input id="channel" [(ngModel)]="currentsel" />
-            <p id="info">{{angle}}</p>
+            <p>{{angle}} &nbsp;&nbsp;({{minAngle}}～{{maxAngle}})</p>
             <div id="helmContainer">
-                <input type="range" id="angle" min="-800" max="800" id="hpro" style="width:400px" [(ngModel)]="angle"
+                <input type="range" id="angle" min="-900" max="900" id="hpro" style="width:400px" [(ngModel)]="angle"
                     (change)="rangechg()" />
             </div>
             <div class="ctrl-row">
-                <input type="button" value="+" style="width:50px;height:30px" (click)="addStep(1)" />
-                &nbsp;
                 <input type="button" value="-" style="width:50px;height:30px" (click)="addStep(-1)" />
+                &nbsp;
+                <input type="button" value="+" style="width:50px;height:30px" (click)="addStep(1)" />
             </div>
             <div class="ctrl-row">
-                <input type="button" value="++" style="width:50px;height:30px" (click)="addStep(10)" />&nbsp;
                 <input type="button" value="--" style="width:50px;height:30px" (click)="addStep(-10)" />
+                &nbsp;
+                <input type="button" value="++" style="width:50px;height:30px" (click)="addStep(10)" />
             </div>
             <div class="ctrl-row">
-                <input type="button" value="归位" style="width:50px;height:30px" onclick="load()" />&nbsp;
-                <input type="button" value="正中" style="width:50px;height:30px" (click)="load0()" />&nbsp;
-                <input type="button" value="保存" style="width:50px;height:30px" (click)="save()" />
+                <input type="button" value="读取" style="width:50px;height:30px" (click)="load()" />&nbsp;
+                <input type="button" value="保存零位" style="width:70px;height:30px" (click)="save()" />&nbsp;
+                <input type="button" value="保存最小" style="width:70px;height:30px" (click)="saveMin()" />&nbsp;
+                <input type="button" value="保存最大" style="width:70px;height:30px" (click)="saveMax()" />
             </div>
             <div class="ctrl-row">
                 文件名<input id="filename" [(ngModel)]="currentfile" />&nbsp;
@@ -43,7 +49,7 @@
             </div>
             <div class="ctrl-row">
                 <input type="button" value="立正" style="width:50px;height:30px" (click)="Stand()" />&nbsp;
-                <input type="button" value="写入零位" style="width:50px;height:30px" (click)="WriteZero()" />
+                <input type="button" value="写入零位" style="width:70px;height:30px" (click)="WriteZero()" />
             </div>
         </div>
     </div>

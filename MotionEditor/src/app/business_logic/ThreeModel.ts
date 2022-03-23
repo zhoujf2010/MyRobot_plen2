@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
+import { PLENControlServerService } from './PLENControlServerService';
 
 import { Gscope } from './Gscope';
 import * as _ from 'lodash';
@@ -28,7 +29,8 @@ export class ThreeModel {
     ray: THREE.Raycaster;
 
     constructor(
-        public scope: Gscope) {
+        public scope: Gscope,
+        public service: PLENControlServerService) {
     }
 
     init($element: any, layout: any): void {
@@ -64,6 +66,7 @@ export class ThreeModel {
         this.transform_controls.setMode("rotate");
         this.scene.add(this.transform_controls);
         this.transform_controls.addEventListener("objectChange", () => {
+            this.limitAngle();
             this.scope.angleChange.next(0);
         })
 
@@ -194,7 +197,7 @@ export class ThreeModel {
 
             var home_quaternion = this.home_quaternions[index].clone();
             var axis_quaternion = this.rotation_axes[index].quaternion.clone();
-            var target_quaternion = home_quaternion.inverse().multiply(axis_quaternion);
+            var target_quaternion = home_quaternion.invert().multiply(axis_quaternion);
 
             var theta_half_diff = Math.atan2(target_quaternion.y, target_quaternion.w);
 
@@ -231,5 +234,16 @@ export class ThreeModel {
 
         home_quaternion.multiply(target_quaternion);
         this.rotation_axes[index].quaternion.copy(home_quaternion);
+    }
+
+    limitAngle():void{ //将角度限制在一个范围内
+        var name = this.transform_controls.object?.name;
+        if (name == null)
+            return;
+        var angle = this.getDiffAngle(this.transform_controls.object);
+        if (angle > this.service.getMaxAngle(name))
+            this.setDiffAngle(this.transform_controls.object,this.service.getMaxAngle(name));
+        if (angle < this.service.getMinAngle(name))
+            this.setDiffAngle(this.transform_controls.object,this.service.getMinAngle(name));
     }
 } 

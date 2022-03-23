@@ -4,8 +4,6 @@
     WAITING
 };
 
-import { ThreeModel } from "../business_logic/ThreeModel";
-
 import { Gscope } from './Gscope';
 import { Injectable } from '@angular/core';
 import * as $ from 'jquery';
@@ -17,6 +15,7 @@ export class PLENControlServerService {
     private _state: SERVER_STATE = SERVER_STATE.DISCONNECTED;
     private _ip_addr: string;
     private _socket: WebSocket;
+    private initList:any = null;
 
     static $inject = [
         '$q',
@@ -32,7 +31,7 @@ export class PLENControlServerService {
         // private _$http: ng.IHttpService,
         // private _$modal: angular.ui.bootstrap.IModalService,
         // private _$rootScope: ng.IRootScopeService,
-        private _three: ThreeModel
+        // private _three: ThreeModel
     ) {
         // this._$rootScope.$on("SyncBegin", () => { this.onSyncBegin(); });
         // this._$rootScope.$on("SyncEnd", () => { this.onSyncEnd(); });
@@ -90,39 +89,60 @@ export class PLENControlServerService {
     }
 
     sendmsg(dt): void {
-        this._socket.send(JSON.stringify(dt));
+        if (this._socket.readyState)
+            this._socket.send(JSON.stringify(dt));
     }
 
     sendAngle(name, angle): void {
-        this._socket.send('{"action":"move","name":"' + name + '","angle":"' + angle + '"}');
+        if (this._socket.readyState)
+            this._socket.send('{"action":"move","name":"' + name + '","angle":"' + angle + '"}');
     }
 
-    addStep(channel, angle): void {
-        this.sendmsg({ "action": "set", "angle": angle, "channel": channel });
+    SetAngle(channel, angle): void {
+        if (this._socket.readyState)
+            this.sendmsg({ "action": "set", "angle": angle, "channel": channel });
+    }
+
+    SetAngle_Ori(channel, angle): void {
+        if (this._socket.readyState)
+            this.sendmsg({ "action": "set_ori", "angle": angle, "channel": channel });
     }
 
     saveAngle(channel, angle): void {
-        this.sendmsg({ "action": "save", "angle": angle, "channel": channel });
+        if (this._socket.readyState)
+            this.sendmsg({ "action": "save", "angle": angle, "channel": channel });
     }
 
-    load0(channel): void {
-        this.sendmsg({ "action": "load", "channel": channel, "angle": -1 });
+    setMaxAngle(channel: number, angle: number): void {
+        if (this._socket.readyState)
+            this.sendmsg({ "action": "saveMax", "angle": angle, "channel": channel });
+        this.initList = null;
+    }
+
+    setMinAngle(channel: number, angle: number): void {
+        if (this._socket.readyState)
+            this.sendmsg({ "action": "saveMin", "angle": angle, "channel": channel });
+        this.initList = null;
     }
 
     Run(filename): void {
-        this.sendmsg({ "action": "runAction", "filename": filename });
+        if (this._socket.readyState)
+            this.sendmsg({ "action": "runAction", "filename": filename });
     }
 
     StopAction(): void {
-        this.sendmsg({ "action": "StopAction" });
+        if (this._socket.readyState)
+            this.sendmsg({ "action": "StopAction" });
     }
 
     Stand(): void {
-        this.sendmsg({ "action": "Reset" });
+        if (this._socket.readyState)
+            this.sendmsg({ "action": "Reset" });
     }
 
     writeZero(): void {
-        this.sendmsg({ "action": "writeZero" });
+        if (this._socket.readyState)
+            this.sendmsg({ "action": "writeZero" });
     }
 
     getList(callback): void {
@@ -163,6 +183,35 @@ export class PLENControlServerService {
         })
     }
 
+    readAngleInfo():void{
+        $.ajax({
+            url: "./api/readinitList",
+            async:false,
+            success: (data) => {
+                this.initList = data;
+            },
+            error: (error) => {
+                alert("Loading a 3D model failed. (Please refresh this page.)" + error);
+            }
+        })
+    }
+
+    load0(channel): void {
+        if (this._socket.readyState)
+            this.sendmsg({ "action": "load", "channel": channel, "angle": -1 });
+    }
+
+    getMaxAngle(name: string): number {
+        if (this.initList == null)
+            this.readAngleInfo();
+        return this.initList[name][1];
+    }
+
+    getMinAngle(name: string): number {
+        if (this.initList == null)
+            this.readAngleInfo();
+        return this.initList[name][2];
+    }
 
     checkServerVersion(): void {
         // this._$http.get("//" + this._ip_addr + "/connect")

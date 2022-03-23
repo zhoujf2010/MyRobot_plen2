@@ -31,12 +31,6 @@ def sigint_handler(a,b):
     _stopped.set()
 
 async def RobotBridge(app):
-    
-    def savetofile(eventtype,data):
-        with open(app.rootpath + '../initList.json', 'w') as fw:
-            json.dump(data,fw)
-
-    app.eventBus.async_listen("savetofile", savetofile)
 
     def RobotConnect(eventtype,data):
         print("RobotConnect")
@@ -51,12 +45,6 @@ async def RobotBridge(app):
             app.webclient.send_message({"action":"RobotDisConnect"})
     
     app.eventBus.async_listen("RobotDisConnect", RobotDisConnect)
-
-    def runAction(eventtype,data):
-        app.robot.runAction(data["filename"])
-    
-    app.eventBus.async_listen("runAction", runAction)
-
 
 async def commonHandle(app, socketclient, msg):
     try:
@@ -82,7 +70,8 @@ async def commonHandle(app, socketclient, msg):
                 else:
                     app.webclient.send_message({"action":"RobotDisConnect"})
             else:
-                app.eventBus.async_fire("PositionChange",data)
+                #app.eventBus.async_fire("PositionChange",data)
+                app.robot.almond_hass_start("",data)
     except:
         return
 
@@ -95,10 +84,6 @@ async def main():
     app.rootpath = rootpath
     app.eventBus = EventBus()
     app.webclient = None
-    
-    if os.path.exists('initList.json'):
-        with open('initList.json','r') as f:
-            app.initList = json.load(f)
 
     await RobotBridge(app)
     app.robot = Robot(app)
@@ -113,7 +98,6 @@ async def main():
         if f.endswith(".css") or f.endswith(".js"):
             app.register_static_path(f"/{f}", rootpath + "/" + f)
 
-    app.register_static_path("/config", rootpath + "/assets/config.html")
     app.register_static_path("/", rootpath + "/" + "index.html")
 
     await app.start()
@@ -121,8 +105,9 @@ async def main():
     global _stopped
     _stopped = asyncio.Event()
     await _stopped.wait()
-    await app.stop()
+
     print("start end")
+    await app.stop()
     app.robot.close()
     print("end")
 

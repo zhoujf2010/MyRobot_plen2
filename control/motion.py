@@ -44,3 +44,12 @@ class Motion(BaseView):
             json.dump(data,fw,indent=4, sort_keys=True)
 
         return self.json_result({"result":"ok"})
+
+    @route("/api/readinitList")
+    async def postmotiondetail(self, request):
+        """获取动作初使位置"""
+        retdt = {}
+        for key in self.app.robot.initList:
+            name = self.app.robot.getAngleName(key)
+            retdt[name] = self.app.robot.initList[key]
+        return self.json_result(retdt)

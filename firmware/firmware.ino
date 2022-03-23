@@ -23,28 +23,36 @@ Servo GPIO12SERVO;
 Servo GPIO14SERVO;
 const int servo_map[18] = {16, 7, 6, 5, 4, 3, 2, 1, 0, 17, 8,  9,  10, 11, 12, 13, 14, 15};
 int servo_cent[18];  //舵机复位位置记录
-#define SERVOMIN  175 // this is the 'minimum' pulse length count (out of 4096)
-#define SERVOMAX  575 // this is the 'maximum' pulse length count (out of 4096)
+#define SERVOMIN  130 //130 this is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX  560 //600 this is the 'maximum' pulse length count (out of 4096)
 
 WiFiServer socketserver(8080);//你要的端口号，随意修改，范围0-65535
 WiFiClient client;
 
 void setpwmangle(int index, int angle) {
   int v = angle + servo_cent[index]; //居中矫正
-  int pwmdt =  map(v, -800, 800, SERVOMAX, SERVOMIN); //范围矫正
+  v = constrain(v, -900, 900);
+  int pwmdt = 0;
 
   index = servo_map[index];
-
   if (index == 16) {
-    pwmdt = 90 + v / 10;
+    pwmdt = 90 - v / 10;
     GPIO12SERVO.write(pwmdt);
   }
   else if (index == 17) {
-    pwmdt = 90 + v / 10;
+    pwmdt = 90 - v / 10;
     GPIO14SERVO.write(pwmdt);
   }
-  else
+  else {
+    pwmdt =  map(v, -900, 900, SERVOMAX, SERVOMIN); //范围矫正
     pwm.setPWM(index, 0, pwmdt);
+  }
+
+  //  Serial.print(index);
+  //  Serial.print("  ");
+  //  Serial.print(angle);
+  //  Serial.print("  ");
+  //  Serial.println(pwmdt);
 }
 
 int m_pwms[18];
@@ -57,13 +65,13 @@ void initServo() {
   Wire.begin(4, 5);
   pwm.begin();
   pwm.setPWMFreq(60);  // servos run at 300Hz updates
-  GPIO12SERVO.attach(12);
-  GPIO14SERVO.attach(14);
+  GPIO12SERVO.attach(12, 500, 2333);
+  GPIO14SERVO.attach(14, 500, 2333);
 
   for (int i = 0; i < 18; i++) {
-    int v = readCusVal2(i) - 800;
+    int v = readCusVal2(i) - 900;
 
-    if (v > 800 || v < -800)
+    if (v > 900 || v < -900)
       v = 0;
     servo_cent[i] = v;
     m_pwms[i] = 0;
@@ -94,9 +102,9 @@ void setup() {
   led_timer.attach(0.5, blink);
 
   StartInit();
-  
+
   initServo();
-  
+
   //连接网络信息
   WiFi.config(local_IP, gateway, subnet);//设置静态IP
   WiFi.mode(WIFI_STA);
@@ -112,7 +120,7 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   initOTA(LED);// 初使化OTA模式
-  
+
   socketserver.begin();
   socketserver.setNoDelay(true);  //加上后才正常些
 
@@ -188,11 +196,16 @@ void loop() {
         if (cmd == 1) {
           m_pwms[joint] = angle;
         }
+        else if (cmd == 3) {
+          m_pwms[joint] = angle -  servo_cent[joint];
+        }
         else if (cmd == 2) { //保存0位点
-          writeCusVal2(joint, angle + 800);
+          writeCusVal2(joint, angle + 900);
           Serial.println("save");
-          int val = angle + 800;
-          int v = readCusVal2(joint) - 800;
+          int val = angle + 900;
+          int v = readCusVal2(joint) - 900;
+          servo_cent[joint] = v;
+          m_pwms[joint] = 0;
           Serial.print("testRead:");
           Serial.println(v);
         }

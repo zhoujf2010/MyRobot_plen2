@@ -95,6 +95,8 @@ class Robot:
             self.connected = False
 
     def send(self, bts):
+        if not self.connected:
+            return
         try:
             self.sock.send(bytes(bts))
         except socket.error as e:
@@ -139,6 +141,11 @@ class Robot:
     def getAngleID(self,name):
         return devices[name]
 
+    def getAngleName(self,id):
+        if not hasattr(self,"devices_rev"):
+            self.devices_rev = dict((str(v-1),k) for k,v in devices.items())
+        return self.devices_rev[id]
+
     def ajastAngle(self,val,minval,maxval):
         delt = maxval - minval
         v = (val - minval)/delt
@@ -155,14 +162,32 @@ class Robot:
         action = data["action"]
         if action == "set":
             self.send(self.seg(1, channel, int(angle)))
+        elif action == "set_ori":
+            self.send(self.seg(3, channel, int(angle)))
         elif action == "save":
-            self.initList[str(channel)] = angle
-            self.app.eventBus.async_fire("savetofile", self.initList)
+            if str(channel) not in self.initList:
+                self.initList[str(channel)] = [0,900,-900]
+
+            self.initList[str(channel)][0] = angle
+            
             self.send(self.seg(2, channel, int(angle)))
+            with open(self.app.rootpath + '../initList.json', 'w') as fw:
+                json.dump(self.initList,fw,indent=4, sort_keys=True)
+        elif action == "saveMax":
+            self.initList[str(channel)][1] = angle
+            
+            with open(self.app.rootpath + '../initList.json', 'w') as fw:
+                json.dump(self.initList,fw,indent=4, sort_keys=True)
+        elif action == "saveMin":
+            self.initList[str(channel)][2] = angle
+            
+            with open(self.app.rootpath + '../initList.json', 'w') as fw:
+                json.dump(self.initList,fw,indent=4, sort_keys=True)
+
         elif action == "load":
-            dt = 0
+            dt = [0,900,-900]
             if str(channel) in self.initList:
-                dt = int(self.initList[str(channel)])
+                dt = self.initList[str(channel)]
             data["socketclient"].send_message({"action": "load", "angle": dt, "channel": channel})
 
 

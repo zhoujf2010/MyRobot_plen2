@@ -17,14 +17,6 @@ import { Object3D } from 'three';
 })
 export class ModelEditorController implements OnInit {
     disabled: boolean = false;
-
-    static $inject = [
-        "$scope",
-        "ModelLoaderService",
-        "SharedThreeService",
-        "SharedMotionService",
-        "ImageStoreService"
-    ];
     layout = {};
     static WIDTH_OFFSET: number = 220 + 45;
     static HEIGHT_OFFSET: number = 186 + 40;

@@ -15,6 +15,8 @@ export class LogoController {
     showmodel: boolean;
     currentsel: number;
     angle: number;
+    maxAngle:number;
+    minAngle:number;
     currentfile: string;
 
     constructor(
@@ -29,10 +31,10 @@ export class LogoController {
         scope.RobotConnected.subscribe((item) => { this.logurl = "logo.png"; });
         scope.RobotDisConnected.subscribe((item) => { this.logurl = "logo2.png"; });
 
-        scope.ReadLoadData.subscribe((item) => { this.angle = item[1] });
+        scope.ReadLoadData.subscribe((item) => { this.angle = item[1][0];this.maxAngle = item[1][1];this.minAngle=item[1][2]; });
 
         scope.angleChange.subscribe((item) => { this.onAngleChange() });
-        this.showmodel = false;
+        this.showmodel = true;
         this.currentsel = 1;
         this.angle = 0;
     }
@@ -57,18 +59,28 @@ export class LogoController {
 
     addStep(v: number): void {
         this.angle += v;
-        this.plen_controll_server_service.addStep(this.currentsel, this.angle);
+        this.plen_controll_server_service.SetAngle_Ori(this.currentsel, this.angle);
     }
 
     rangechg(): void {
-        this.plen_controll_server_service.addStep(this.currentsel, this.angle);
+        this.plen_controll_server_service.SetAngle_Ori(this.currentsel, this.angle);
     }
 
     save(): void {
         this.plen_controll_server_service.saveAngle(this.currentsel, this.angle);
     }
 
-    load0(): void {
+    saveMax(): void {
+        this.maxAngle = this.angle;
+        this.plen_controll_server_service.setMaxAngle(this.currentsel, this.angle);
+    }
+
+    saveMin(): void {
+        this.minAngle = this.angle;
+        this.plen_controll_server_service.setMinAngle(this.currentsel, this.angle);
+    }
+
+    load(): void {
         this.plen_controll_server_service.load0(this.currentsel);
     }
 

@@ -1,6 +1,7 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { ThreeModel } from '../../business_logic/ThreeModel';
 import { Gscope } from '../../business_logic/Gscope';
+import { PLENControlServerService } from '../../business_logic/PLENControlServerService';
 
 @Component({
     selector: 'changeAngle-viewer',
@@ -15,7 +16,8 @@ export class ChangeAngleController implements OnInit {
 
     constructor(
         public scope: Gscope,
-        public three_model: ThreeModel
+        public three_model: ThreeModel,
+        public service: PLENControlServerService
     ) {
     }
 
@@ -25,16 +27,26 @@ export class ChangeAngleController implements OnInit {
 
     onAngleChange(): void {
         this.name = this.three_model.transform_controls.object?.name;
-        this.diff_angle = this.three_model.getDiffAngle(this.three_model.transform_controls.object) / 10;
+        this.diff_angle = this.three_model.getDiffAngle(this.three_model.transform_controls.object);
 
-        this.angle = this.diff_angle / 180 * 800;
+        this.angle = this.diff_angle;
         this.visible = this.name != "" && this.name != "none" && this.name != undefined;
     }
 
     rangechg(): void {
 
-        this.diff_angle = this.angle / 800 * 180;
-        this.three_model.setDiffAngle(this.three_model.transform_controls.object, this.diff_angle * 10);
+        this.name = this.three_model.transform_controls.object?.name;
+        if (this.name == null)
+            return;
+
+        if (this.angle > this.service.getMaxAngle(this.name))
+            this.angle = this.service.getMaxAngle(this.name);
+        if (this.angle < this.service.getMinAngle(this.name))
+            this.angle = this.service.getMinAngle(this.name);
+
+            
+        this.diff_angle = this.angle;
+        this.three_model.setDiffAngle(this.three_model.transform_controls.object, this.diff_angle);
 
         this.scope.SaveFrame.next(0);
         this.scope.angleChange.next(0);
